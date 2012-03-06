@@ -146,7 +146,7 @@ public class RestTraversal implements RestTraversalDescription {
             description.put("relationships",new HashSet<Map<String,Object>>());
         }
         Set<Map<String,Object>> relationships= (Set<Map<String, Object>>) description.get("relationships");
-        relationships.add(toMap("type", relationshipType, "direction", directionString(direction)));
+        relationships.add(toMap("type", relationshipType.name(), "direction", directionString(direction)));
         return this;
     }
 
