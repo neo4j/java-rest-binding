@@ -20,6 +20,8 @@
 package org.neo4j.rest.graphdb;
 
 
+import java.util.Map;
+
 import org.neo4j.graphdb.DynamicRelationshipType;
 import org.neo4j.graphdb.Node;
 import org.neo4j.graphdb.Relationship;
@@ -27,8 +29,6 @@ import org.neo4j.graphdb.RelationshipType;
 import org.neo4j.rest.graphdb.index.RestIndexManager;
 import org.neo4j.rest.graphdb.query.RestCypherQueryEngine;
 import org.neo4j.rest.graphdb.util.ResultConverter;
-
-import java.util.Map;
 
 
 public class RestGraphDatabase extends AbstractRemoteDatabase {
@@ -59,18 +59,22 @@ public class RestGraphDatabase extends AbstractRemoteDatabase {
     }
     
     
+    @Override
     public RestIndexManager index() {
        return this.restAPI.index();
     }
 
+    @Override
     public Node createNode() {
     	return this.restAPI.createNode(null);
     }
   
+    @Override
     public Node getNodeById( long id ) {
     	return this.restAPI.getNodeById(id);
     }
 
+    @Override
     public Node getReferenceNode() {
         return this.restAPI.getReferenceNode();
     }
@@ -80,9 +84,18 @@ public class RestGraphDatabase extends AbstractRemoteDatabase {
         return cypherQueryEngine.query("start n=node(*) return n", null).to(Node.class);
     }
 
+    public Iterable<Map<String, Object>> execute( String statement, Map<String, Object> params )
+    {
+        return cypherQueryEngine.query( statement, params );
+    }
+
+
     @Override
     public Iterable<RelationshipType> getRelationshipTypes() {
-        return cypherQueryEngine.query("start n=node(*) match n-[r]->() return distinct type(r) as rel_type", null).to(RelationshipType.class, new ResultConverter<Map<String, Object>, RelationshipType>() {
+        return cypherQueryEngine.query( "start n=node(*) match n-[r]->() return distinct type(r) as rel_type", null ).to(
+                RelationshipType.class,//
+                new ResultConverter<Map<String, Object>, RelationshipType>()
+                {
             @Override
             public RelationshipType convert(Map<String, Object> row, Class<RelationshipType> type) {
                 return DynamicRelationshipType.withName((String)row.get("rel_type"));
@@ -90,6 +103,7 @@ public class RestGraphDatabase extends AbstractRemoteDatabase {
         });
     }
 
+    @Override
     public Relationship getRelationshipById( long id ) {
     	return this.restAPI.getRelationshipById(id);
     }    
