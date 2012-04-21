@@ -35,6 +35,7 @@ import org.neo4j.graphdb.Traverser.Order;
 import org.neo4j.helpers.collection.CombiningIterable;
 import org.neo4j.helpers.collection.IterableWrapper;
 import org.neo4j.helpers.collection.IteratorUtil;
+import org.neo4j.kernel.impl.traversal.OldTraverserWrapper;
 import org.neo4j.rest.graphdb.RestAPI;
 import org.neo4j.rest.graphdb.traversal.RestDirection;
 
@@ -51,14 +52,17 @@ public class RestNode extends RestEntity implements Node {
         super( data, restApi );
     }    
   
+    @Override
     public Relationship createRelationshipTo( Node toNode, RelationshipType type ) {
-    	 return this.restApi.createRelationship(this,(RestNode)toNode,type,null);
+    	 return this.restApi.createRelationship(this,toNode,type,null);
     }
 
+    @Override
     public Iterable<Relationship> getRelationships() {
         return restApi.wrapRelationships( restRequest.get( "relationships/all" ) );
     }
 
+    @Override
     public Iterable<Relationship> getRelationships( RelationshipType... types ) {
         String path = getStructuralData().get( "all_relationships" ) + "/";
         int counter = 0;
@@ -72,10 +76,12 @@ public class RestNode extends RestEntity implements Node {
     }
 
 
+    @Override
     public Iterable<Relationship> getRelationships( Direction direction ) {
         return restApi.wrapRelationships( restRequest.get( "relationships/" + RestDirection.from( direction ).shortName ) );
     }
 
+    @Override
     public Iterable<Relationship> getRelationships( RelationshipType type,
                                                     Direction direction ) {
         String relationshipsKey = RestDirection.from( direction ).longName + "_relationships";
@@ -83,41 +89,57 @@ public class RestNode extends RestEntity implements Node {
         return restApi.wrapRelationships( restRequest.get( relationship + "/" + type.name() ) );
     }
 
+    @Override
     public Relationship getSingleRelationship( RelationshipType type,
                                                Direction direction ) {
         return IteratorUtil.singleOrNull( getRelationships( type, direction ) );
     }
 
+    @Override
     public boolean hasRelationship() {
         return getRelationships().iterator().hasNext();
     }
 
+    @Override
     public boolean hasRelationship( RelationshipType... types ) {
         return getRelationships( types ).iterator().hasNext();
     }
 
+    @Override
     public boolean hasRelationship( Direction direction ) {
         return getRelationships( direction ).iterator().hasNext();
     }
 
+    @Override
     public boolean hasRelationship( RelationshipType type, Direction direction ) {
         return getRelationships( type, direction ).iterator().hasNext();
     }
 
-    public Traverser traverse( Order order, StopEvaluator stopEvaluator,
-                               ReturnableEvaluator returnableEvaluator, Object... rels ) {
-        throw new UnsupportedOperationException();
+    @Override
+    public Traverser traverse( Order traversalOrder, StopEvaluator stopEvaluator,
+            ReturnableEvaluator returnableEvaluator, Object... relationshipTypesAndDirections )
+    {
+        return OldTraverserWrapper.traverse( this, traversalOrder, stopEvaluator, returnableEvaluator,
+                relationshipTypesAndDirections );
+
     }
 
-    public Traverser traverse( Order order, StopEvaluator stopEvaluator,
-                               ReturnableEvaluator returnableEvaluator, RelationshipType type, Direction direction ) {
-        throw new UnsupportedOperationException();
+    @Override
+    public Traverser traverse( Order traversalOrder, StopEvaluator stopEvaluator,
+            ReturnableEvaluator returnableEvaluator, RelationshipType relationshipType, Direction direction )
+    {
+
+        return OldTraverserWrapper.traverse( this, traversalOrder, stopEvaluator, returnableEvaluator,
+                relationshipType, direction );
     }
 
-    public Traverser traverse( Order order, StopEvaluator stopEvaluator,
-                               ReturnableEvaluator returnableEvaluator, RelationshipType type, Direction direction,
-                               RelationshipType secondType, Direction secondDirection ) {
-        throw new UnsupportedOperationException();
+    @Override
+    public Traverser traverse( Order traversalOrder, StopEvaluator stopEvaluator,
+            ReturnableEvaluator returnableEvaluator, RelationshipType firstRelationshipType, Direction firstDirection,
+            RelationshipType secondRelationshipType, Direction secondDirection )
+    {
+        return OldTraverserWrapper.traverse( this, traversalOrder, stopEvaluator, returnableEvaluator,
+                firstRelationshipType, firstDirection, secondRelationshipType, secondDirection );
     }
 
     @Override
@@ -133,7 +155,10 @@ public class RestNode extends RestEntity implements Node {
     @Override
     public boolean hasRelationship(Direction direction, RelationshipType... types) {
         for (RelationshipType relationshipType : types) {
-            if (hasRelationship(relationshipType,direction)) return true;
+            if (hasRelationship(relationshipType,direction))
+            {
+                return true;
+            }
         }
         return false;
     }
