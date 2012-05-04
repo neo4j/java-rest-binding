@@ -26,8 +26,8 @@ Build it locally. Then use the maven / ivy dependency or copy the jar into your 
 		<version>1.6.M02</version>
     </dependency>
 
-    GraphDatabaseService gds = new RestGraphDatabase(new URI("http://localhost:7474/db/data"));
-    GraphDatabaseService gds = new RestGraphDatabase(new URI("http://localhost:7474/db/data"),username,password);
+    GraphDatabaseService gds = new RestGraphDatabase("http://localhost:7474/db/data");
+    GraphDatabaseService gds = new RestGraphDatabase("http://localhost:7474/db/data",username,password);
 
     <bean id="graphDbService" class="org.neo4j.rest.graphdb.RestGraphDatabase" destroy-method="shutdown">
         <constructor-arg index="0" value="http://localhost:7474/db/data" />
