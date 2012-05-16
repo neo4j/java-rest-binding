@@ -56,10 +56,12 @@ public class RestEntity implements PropertyContainer, UpdatableRestResult<RestEn
     public RestEntity( Map<?, ?> data, RestAPI restApi ) {
         this.structuralData = data;
         this.restApi = restApi;
-        this.propertyData = (Map<String, Object>) data.get( "data" );
+        if(data != null) {
+            this.propertyData = (Map<String, Object>) data.get( "data" );
+            String uri = (String) data.get( "self" );
+            this.restRequest = restApi.getRestRequest().with( uri );
+        }
         this.lastTimeFetchedPropertyData = System.currentTimeMillis();
-        String uri = (String) data.get( "self" );
-        this.restRequest = restApi.getRestRequest().with( uri );
     }
 
     public String getUri() {       
