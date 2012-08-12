@@ -40,6 +40,7 @@ import org.neo4j.rest.graphdb.util.QueryResult;
 import org.neo4j.rest.graphdb.util.ResultConverter;
 
 import java.util.Map;
+import java.util.Set;
 
 /**
  * @author mh
@@ -253,6 +254,31 @@ public class RestAPIFacade implements RestAPI {
 
     public void close() {
         BatchTransaction.shutdown();
+    }
+
+    @Override
+    public boolean isAutoIndexingEnabled(Class<? extends PropertyContainer> clazz) {
+        return current().isAutoIndexingEnabled(clazz);
+    }
+
+    @Override
+    public void setAutoIndexingEnabled(Class<? extends PropertyContainer> clazz, boolean enabled) {
+        current().setAutoIndexingEnabled(clazz, enabled);
+    }
+
+    @Override
+    public Set<String> getAutoIndexedProperties(Class forClass) {
+        return current().getAutoIndexedProperties(forClass);
+    }
+
+    @Override
+    public void startAutoIndexingProperty(Class forClass, String s) {
+        current().startAutoIndexingProperty(forClass, s);
+    }
+
+    @Override
+    public void stopAutoIndexingProperty(Class forClass, String s) {
+        current().stopAutoIndexingProperty(forClass, s);
     }
 
     private final ExecutingRestAPI direct;

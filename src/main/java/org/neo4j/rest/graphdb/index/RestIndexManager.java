@@ -19,7 +19,6 @@
  */
 package org.neo4j.rest.graphdb.index;
 
-import java.util.HashMap;
 import java.util.Map;
 
 import org.neo4j.graphdb.Node;
@@ -32,7 +31,6 @@ import org.neo4j.graphdb.index.RelationshipAutoIndexer;
 import org.neo4j.graphdb.index.RelationshipIndex;
 import org.neo4j.index.impl.lucene.LuceneIndexImplementation;
 import org.neo4j.rest.graphdb.RestAPI;
-import org.neo4j.rest.graphdb.RestRequest;
 
 public class RestIndexManager implements IndexManager {
     public static final String RELATIONSHIP = "relationship";
@@ -135,12 +133,12 @@ public class RestIndexManager implements IndexManager {
 
 	@Override
 	public AutoIndexer<Node> getNodeAutoIndexer() {
-		 throw new UnsupportedOperationException();
+		 return new RestAutoIndexer<Node>(restApi, Node.class);
 	}
 
 	@Override
 	public RelationshipAutoIndexer getRelationshipAutoIndexer() {
-		 throw new UnsupportedOperationException();
+		 return new RestRelationshipAutoIndexer(restApi);
 	}
 }
 

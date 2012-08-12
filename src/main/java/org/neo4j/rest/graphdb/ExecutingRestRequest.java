@@ -151,19 +151,14 @@ public class ExecutingRestRequest implements RestRequest {
         }
     }
 
-
     @Override
     public RequestResult put( String path, Object data ) {
         Builder builder = builder( path );
         if ( data != null ) {
             builder = builder.entity( JsonHelper.createJsonFrom( data ), APPLICATION_JSON_TYPE );
         }
-        final ClientResponse response = builder.put(ClientResponse.class);
-        response.close();
         return RequestResult.extractFrom(builder.put(ClientResponse.class));
     }
-
-
 
     @Override
     public RestRequest with( String uri ) {

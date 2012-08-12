@@ -51,10 +51,10 @@ import org.neo4j.rest.graphdb.util.ResultConverter;
 
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
+import java.util.*;
 
 import static javax.ws.rs.core.Response.Status.CREATED;
 
@@ -180,6 +180,68 @@ public class ExecutingRestAPI implements RestAPI {
     @Override
     public void close() {
     }
+
+    @Override
+    public boolean isAutoIndexingEnabled(Class<? extends PropertyContainer> clazz) {
+        RequestResult response = getRestRequest().get(buildPathAutoIndexerStatus(clazz));
+        if (response.statusIs(Response.Status.OK)) {
+            return Boolean.parseBoolean(response.getText());
+        } else {
+            throw new IllegalStateException("received " + response);
+        }
+    }
+
+    @Override
+    public void setAutoIndexingEnabled(Class<? extends PropertyContainer> clazz, boolean enabled) {
+        RequestResult response = getRestRequest().put(buildPathAutoIndexerStatus(clazz), enabled);
+        if (response.statusOtherThan(Status.NO_CONTENT)) {
+            throw new IllegalStateException("received " + response);
+        }
+    }
+
+    @Override
+    public Set<String> getAutoIndexedProperties(Class forClass) {
+        RequestResult response = getRestRequest().get(buildPathAutoIndexerProperties(forClass).toString());
+        Collection<String> autoIndexedProperties = (Collection<String>) JsonHelper.readJson(response.getText());
+        return new HashSet<String>(autoIndexedProperties);
+    }
+
+    @Override
+    public void startAutoIndexingProperty(Class forClass, String s) {
+        try {
+            // we need to use a inputstream instead of the string directly. Otherwise "post" implicitly uses
+            // StreamJsonHelper.writeJsonTo which quotes a given string
+            InputStream stream = new ByteArrayInputStream(s.getBytes("UTF-8"));
+            RequestResult response = getRestRequest().post(buildPathAutoIndexerProperties(forClass).toString(), stream);
+            if (response.statusOtherThan(Status.NO_CONTENT)) {
+                throw new IllegalStateException("received " + response);
+            }
+        } catch (UnsupportedEncodingException e) {
+            throw new IllegalStateException(e);
+        }
+
+    }
+
+    @Override
+    public void stopAutoIndexingProperty(Class forClass, String s) {
+        RequestResult response = getRestRequest().delete(buildPathAutoIndexerProperties(forClass).append("/").append(s).toString());
+        if (response.statusOtherThan(Status.NO_CONTENT)) {
+            throw new IllegalStateException("received " + response);
+        }
+    }
+
+    private String buildPathAutoIndexerStatus(Class<? extends PropertyContainer> clazz) {
+        return buildPathAutoIndexerBase(clazz).append("/status").toString();
+    }
+
+    private StringBuilder buildPathAutoIndexerProperties(Class<? extends PropertyContainer> clazz) {
+        return buildPathAutoIndexerBase(clazz).append("/properties");
+    }
+
+    private StringBuilder buildPathAutoIndexerBase(Class<? extends PropertyContainer> clazz) {
+        return new StringBuilder().append("index/auto/").append(clazz.getSimpleName().toLowerCase());
+    }
+
 
     public RestRequest getRestRequest() {
         final BatchRestAPI restAPI = current();
