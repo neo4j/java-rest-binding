@@ -25,6 +25,7 @@ public class Config {
     public final static String CONFIG_PREFIX = "org.neo4j.rest.";
     public static final String CONFIG_STREAM = CONFIG_PREFIX + "stream";
     public static final String CONFIG_BATCH_TRANSACTION = CONFIG_PREFIX+"batch_transaction";
+    public static final String CONFIG_LOG_REQUESTS = CONFIG_PREFIX+"logging_filter";
 
     public static int getConnectTimeout() {
         return getTimeout("connect_timeout", 30);
@@ -40,6 +41,10 @@ public class Config {
 
     public static boolean useBatchTransactions() {
         return System.getProperty(CONFIG_BATCH_TRANSACTION,"true").equalsIgnoreCase("true");
+    }
+
+    public static boolean useLoggingFilter() {
+        return System.getProperty(CONFIG_LOG_REQUESTS,"false").equalsIgnoreCase("true");
     }
 
     private static int getTimeout(final String param, final int defaultValue) {

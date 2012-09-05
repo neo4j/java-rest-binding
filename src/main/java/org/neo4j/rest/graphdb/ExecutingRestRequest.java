@@ -27,6 +27,7 @@ import java.util.Map;
 
 import javax.ws.rs.core.MediaType;
 
+import com.sun.jersey.api.client.filter.LoggingFilter;
 import org.neo4j.helpers.collection.MapUtil;
 import org.neo4j.rest.graphdb.util.Config;
 import org.neo4j.rest.graphdb.util.JsonHelper;
@@ -69,6 +70,9 @@ public class ExecutingRestRequest implements RestRequest {
         client.setReadTimeout(Config.getReadTimeout());
         client.setChunkedEncodingSize(8*1024);
         userAgent.install(client);
+        if (Config.useLoggingFilter()) {
+            client.addFilter(new LoggingFilter());
+        }
         return client;
     }
 

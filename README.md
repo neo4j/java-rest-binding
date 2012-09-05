@@ -71,5 +71,4 @@ _timeouts in seconds_
 * org.neo4j.rest.driver="neo4j-rest-graphdb/1.8M07"
 * org.neo4j.rest.stream=true
 * org.neo4j.rest.batch_transactions=true (convert transaction scope into batch-rest-operations)
-
-
+* org.neo4j.rest.logging_filter=false (set to true if verbose request/response logging should be enabled)
