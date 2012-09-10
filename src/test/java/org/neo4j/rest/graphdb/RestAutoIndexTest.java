@@ -20,18 +20,13 @@
 package org.neo4j.rest.graphdb;
 
 import org.junit.Test;
+import org.neo4j.graphdb.DynamicRelationshipType;
 import org.neo4j.graphdb.Node;
 import org.neo4j.graphdb.PropertyContainer;
-import org.neo4j.graphdb.index.AutoIndexer;
-import org.neo4j.graphdb.index.RelationshipAutoIndexer;
-import org.neo4j.rest.graphdb.util.StreamJsonHelper;
+import org.neo4j.graphdb.Relationship;
+import org.neo4j.graphdb.index.*;
 
-import java.io.ByteArrayOutputStream;
-import java.io.StringWriter;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 public class RestAutoIndexTest extends RestTestBase {
 
@@ -57,6 +52,57 @@ public class RestAutoIndexTest extends RestTestBase {
     public void testAddRemoveAutoIndexerPropertiesOnRelationships() {
         RelationshipAutoIndexer indexer = getRestGraphDb().index().getRelationshipAutoIndexer();
         testAddRemoveAutoIndexerProperties(indexer);
+    }
+
+    @Test
+    public void testGetAutoIndexOnNodes() {
+        ReadableIndex<Node> autoIndex = getRestGraphDb().index().getNodeAutoIndexer().getAutoIndex();
+        assertNotNull(autoIndex);
+    }
+
+    @Test
+    public void testGetAutoIndexOnRelationships() {
+        ReadableRelationshipIndex autoIndex = getRestGraphDb().index().getRelationshipAutoIndexer().getAutoIndex();
+        assertNotNull(autoIndex);
+    }
+
+    @Test
+    public void testAutoIndexingByCheckingIndexData() {
+        IndexManager indexManager = getRestGraphDb().index();
+
+        AutoIndexer<Node> nodeAutoIndexer = indexManager.getNodeAutoIndexer();
+        RelationshipAutoIndexer relationshipAutoIndex = indexManager.getRelationshipAutoIndexer();
+
+        // setup auto indexing
+        nodeAutoIndexer.startAutoIndexingProperty("nodeProperty");
+        nodeAutoIndexer.setEnabled(true);
+        relationshipAutoIndex.startAutoIndexingProperty("relationshipProperty");
+        relationshipAutoIndex.setEnabled(true);
+
+        // create two connected nodes
+        Node startNode = getRestGraphDb().createNode();
+        Node endNode = getRestGraphDb().createNode();
+        startNode.setProperty("nodeProperty", "startNode");
+        endNode.setProperty("nodeProperty", "endNode");
+        Relationship relationship = startNode.createRelationshipTo(endNode, DynamicRelationshipType.withName("sample"));
+        relationship.setProperty("relationshipProperty", "sample");
+
+        // check index data
+        ReadableIndex<Node> nodeAutoIndex = nodeAutoIndexer.getAutoIndex();
+        IndexHits<Node> nodeHits = nodeAutoIndex.get("nodeProperty", "startNode");
+        Node nodeByIndex = nodeHits.getSingle();
+        assertEquals(startNode, nodeByIndex);
+
+        nodeHits = nodeAutoIndex.get("nodeProperty", "endNode");
+        nodeByIndex = nodeHits.getSingle();
+        assertEquals(endNode, nodeByIndex);
+
+        nodeHits = nodeAutoIndex.get("nodeProperty", "nonExistingValue");
+        assertEquals(0, nodeHits.size());
+
+        IndexHits<Relationship> relationshipHits = relationshipAutoIndex.getAutoIndex().get("relationshipProperty", "sample");
+        Relationship relationshipByIndex = relationshipHits.getSingle();
+        assertEquals(relationship, relationshipByIndex);
     }
 
     private void testAddRemoveAutoIndexerProperties(AutoIndexer<? extends PropertyContainer> indexer) {

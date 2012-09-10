@@ -24,18 +24,18 @@ import java.util.Map;
 import org.neo4j.graphdb.Node;
 import org.neo4j.graphdb.PropertyContainer;
 import org.neo4j.graphdb.Relationship;
-import org.neo4j.graphdb.index.AutoIndexer;
-import org.neo4j.graphdb.index.Index;
-import org.neo4j.graphdb.index.IndexManager;
-import org.neo4j.graphdb.index.RelationshipAutoIndexer;
-import org.neo4j.graphdb.index.RelationshipIndex;
+import org.neo4j.graphdb.index.*;
 import org.neo4j.index.impl.lucene.LuceneIndexImplementation;
 import org.neo4j.rest.graphdb.RestAPI;
 
 public class RestIndexManager implements IndexManager {
     public static final String RELATIONSHIP = "relationship";
     public static final String NODE = "node";
+    public static final String NODE_AUTO_INDEX_NAME = "node_auto_index";
+    public static final String RELATIONSHIP_AUTO_INDEX_NAME = "relationship_auto_index";
     private final RestAPI restApi;
+    private ReadableIndex<Node> nodeAutoIndex;
+    private ReadableRelationshipIndex relationshipAutoIndex;
 
     public RestIndexManager(RestAPI restApi) {
         this.restApi = restApi;
@@ -133,12 +133,28 @@ public class RestIndexManager implements IndexManager {
 
 	@Override
 	public AutoIndexer<Node> getNodeAutoIndexer() {
-		 return new RestAutoIndexer<Node>(restApi, Node.class);
+		 return new RestAutoIndexer<Node>(restApi, Node.class, getNodeAutoIndex());
 	}
 
 	@Override
 	public RelationshipAutoIndexer getRelationshipAutoIndexer() {
-		 return new RestRelationshipAutoIndexer(restApi);
+		 return new RestRelationshipAutoIndexer(restApi, getRelationshipAutoIndex());
 	}
+
+    private ReadableIndex<Node> getNodeAutoIndex() {
+        if (nodeAutoIndex==null) {
+            nodeAutoIndex = forNodes(NODE_AUTO_INDEX_NAME);
+        }
+        return nodeAutoIndex;
+    }
+
+    private ReadableRelationshipIndex getRelationshipAutoIndex() {
+        if (relationshipAutoIndex==null) {
+            relationshipAutoIndex = forRelationships(RELATIONSHIP_AUTO_INDEX_NAME);
+        }
+        return relationshipAutoIndex;
+    }
+
+
 }
 

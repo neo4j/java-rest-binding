@@ -28,7 +28,12 @@ import org.neo4j.graphdb.GraphDatabaseService;
 import org.neo4j.graphdb.Node;
 import org.neo4j.graphdb.Relationship;
 import org.neo4j.graphdb.Transaction;
+import org.neo4j.graphdb.index.Index;
 import org.neo4j.graphdb.index.IndexManager;
+import org.neo4j.graphdb.index.ReadableIndex;
+import org.neo4j.graphdb.index.RelationshipIndex;
+import org.neo4j.rest.graphdb.index.RestAutoIndexer;
+import org.neo4j.tooling.GlobalGraphOperations;
 
 /**
  * @author mh
@@ -57,7 +62,7 @@ public class Neo4jDatabaseCleaner {
     private void removeNodes(Map<String, Object> result) {
         Node refNode = graph.getReferenceNode();
         int nodes = 0, relationships = 0;
-        for (Node node : graph.getAllNodes()) {
+        for (Node node : GlobalGraphOperations.at(graph).getAllNodes()) {
             for (Relationship rel : node.getRelationships(Direction.OUTGOING)) {
                 rel.delete();
                 relationships++;
@@ -77,10 +82,18 @@ public class Neo4jDatabaseCleaner {
         result.put("node-indexes", Arrays.asList(indexManager.nodeIndexNames()));
         result.put("relationship-indexes", Arrays.asList(indexManager.relationshipIndexNames()));
         for (String ix : indexManager.nodeIndexNames()) {
-            indexManager.forNodes(ix).delete();
+            deleteIndex(indexManager.forNodes(ix));
         }
         for (String ix : indexManager.relationshipIndexNames()) {
-            indexManager.forRelationships(ix).delete();
+            deleteIndex(indexManager.forRelationships(ix));
+        }
+    }
+
+    private void deleteIndex(Index index) {
+        try {
+            index.delete();
+        } catch (UnsupportedOperationException e) {
+            // pass
         }
     }
 }
