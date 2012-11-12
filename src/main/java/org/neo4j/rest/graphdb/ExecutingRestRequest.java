@@ -141,9 +141,22 @@ public class ExecutingRestRequest implements RestRequest {
     private InputStream toInputStream(Object data) {
         try {
             if (data instanceof InputStream) return (InputStream) data;
-            PipedInputStream inputStream = new PipedInputStream(8 * 1024);
-            PipedOutputStream outputStream = new PipedOutputStream(inputStream);
-            StreamJsonHelper.writeJsonTo(data, outputStream);
+            final PipedOutputStream outputStream = new PipedOutputStream();
+            PipedInputStream inputStream = new PipedInputStream(outputStream);
+            final Object finalData = data;            
+            new Thread(
+              new Runnable(){
+                public void run(){                    
+                    	StreamJsonHelper.writeJsonTo(finalData, outputStream);              
+                try {
+                    outputStream.flush();
+                    outputStream.close();
+                } catch (IOException e) {
+                    throw new RuntimeException("Error writing "+finalData+" to stream",e);
+                }
+                }
+              }
+            ).start();          
             return inputStream;
         } catch (IOException e) {
             throw new RuntimeException("Error writing "+data+" to stream",e);
