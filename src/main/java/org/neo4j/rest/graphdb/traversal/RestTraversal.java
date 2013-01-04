@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2002-2012 "Neo Technology,"
+ * Copyright (c) 2002-2013 "Neo Technology,"
  * Network Engine for Objects in Lund AB [http://neotechnology.com]
  *
  * This file is part of Neo4j.
@@ -90,6 +90,12 @@ public class RestTraversal implements RestTraversalDescription {
         throw new UnsupportedOperationException("Only builtin paths supported");
     }
 
+    public RestTraversalDescription evaluator(PathEvaluator evaluator) {
+        if (evaluator == Evaluators.all()) return add("return_filter",toMap("language","builtin", "name","all"));
+        if (evaluator == Evaluators.excludeStartPosition()) return add("return_filter",toMap("language","builtin", "name","all_but_start_node"));
+        throw new UnsupportedOperationException("Only builtin paths supported");
+    }
+
     public RestTraversalDescription evaluator(Evaluator evaluator) {
         if (evaluator == Evaluators.all()) return add("return_filter",toMap("language","builtin", "name","all"));
         if (evaluator == Evaluators.excludeStartPosition()) return add("return_filter",toMap("language","builtin", "name","all_but_start_node"));
@@ -177,6 +183,11 @@ public class RestTraversal implements RestTraversalDescription {
 
     @Override
     public <STATE> TraversalDescription expand(PathExpander<STATE> expander, InitialStateFactory<STATE> initialState) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public <STATE> TraversalDescription expand(PathExpander<STATE> expander, InitialBranchState<STATE> initialState) {
         throw new UnsupportedOperationException();
     }
 
