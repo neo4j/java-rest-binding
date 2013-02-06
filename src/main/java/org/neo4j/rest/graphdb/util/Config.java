@@ -26,6 +26,7 @@ public class Config {
     public static final String CONFIG_STREAM = CONFIG_PREFIX + "stream";
     public static final String CONFIG_BATCH_TRANSACTION = CONFIG_PREFIX+"batch_transaction";
     public static final String CONFIG_LOG_REQUESTS = CONFIG_PREFIX+"logging_filter";
+    public static final String WRITE_THREADS = "write_threads";
 
     public static int getConnectTimeout() {
         return getTimeout("connect_timeout", 30);
@@ -49,5 +50,9 @@ public class Config {
 
     private static int getTimeout(final String param, final int defaultValue) {
         return (int) TimeUnit.SECONDS.toMillis(Integer.parseInt(System.getProperty(CONFIG_PREFIX + param, "" + defaultValue)));
+    }
+    
+    public static int getWriterThreads() {
+        return Integer.parseInt(System.getProperty(CONFIG_PREFIX + WRITE_THREADS, "" + 10));
     }
 }

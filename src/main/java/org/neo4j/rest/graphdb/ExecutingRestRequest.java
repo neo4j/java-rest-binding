@@ -24,6 +24,8 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URLEncoder;
 import java.util.Map;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import javax.ws.rs.core.MediaType;
 
@@ -42,6 +44,8 @@ import org.neo4j.rest.graphdb.util.StreamJsonHelper;
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON_TYPE;
 
 public class ExecutingRestRequest implements RestRequest {
+
+    final static ExecutorService pool= Executors.newFixedThreadPool(Config.getWriterThreads());
 
     public static final MediaType STREAMING_JSON_TYPE = new MediaType(APPLICATION_JSON_TYPE.getType(),APPLICATION_JSON_TYPE.getSubtype(), MapUtil.stringMap("stream","true"));
     private final String baseUri;
@@ -138,12 +142,12 @@ public class ExecutingRestRequest implements RestRequest {
         return RequestResult.extractFrom(builder.post(ClientResponse.class));
     }
 
-    private InputStream toInputStream(Object data) {
+    private InputStream toInputStream(final Object data) {
         try {
             if (data instanceof InputStream) return (InputStream) data;
             PipedInputStream inputStream = new PipedInputStream(8 * 1024);
-            PipedOutputStream outputStream = new PipedOutputStream(inputStream);
-            StreamJsonHelper.writeJsonTo(data, outputStream);
+            final PipedOutputStream outputStream = new PipedOutputStream(inputStream);
+            pool.submit(new Runnable() { public void run() { StreamJsonHelper.writeJsonTo(data, outputStream); } });
             return inputStream;
         } catch (IOException e) {
             throw new RuntimeException("Error writing "+data+" to stream",e);
@@ -182,4 +186,8 @@ public class ExecutingRestRequest implements RestRequest {
 	public Map<?, ?> toMap(RequestResult requestResult) {	
 	   return requestResult.toMap();
 	}
+
+    public static void shutdown() {
+        pool.shutdown();
+    }
 }

@@ -65,6 +65,23 @@ public class BatchRestAPITest extends RestTestBase {
         assertEquals("node1", response.n1.getProperty("name"));      
         assertEquals("node2", response.n2.getProperty("name"));
     }
+
+    @Test
+    public void testCreateLargeSetOfNodes(){
+        TestBatchResult response =this.restAPI.executeBatch(new BatchCallback<TestBatchResult>() {
+            @Override
+            public TestBatchResult recordBatch(RestAPI batchRestApi) {
+                TestBatchResult result=new TestBatchResult();
+                result.n1=batchRestApi.createNode(map("name", "node0"));
+                for (int i=1;i<=1000;i++) {
+                    result.n2=batchRestApi.createNode(map("name", "node"+i));
+                }
+                return result;
+            }
+        });       
+        assertEquals("node0", response.n1.getProperty("name"));      
+        assertEquals("node1000", response.n2.getProperty("name"));
+    }
    
     @Test
     public void testRestApiWorksRegardlessOfSource() {

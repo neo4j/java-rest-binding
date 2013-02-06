@@ -19,12 +19,15 @@
  */
 package org.neo4j.rest.graphdb;
 
+import org.junit.Before;
 import org.junit.Test;
 import org.neo4j.graphdb.DynamicRelationshipType;
 import org.neo4j.graphdb.Node;
 import org.neo4j.graphdb.PropertyContainer;
 import org.neo4j.graphdb.Relationship;
 import org.neo4j.graphdb.index.*;
+
+import java.net.URISyntaxException;
 
 import static org.junit.Assert.*;
 
@@ -129,11 +132,17 @@ public class RestAutoIndexTest extends RestTestBase {
     }
 
     private void testEnableDisableAutoIndexer(AutoIndexer<? extends PropertyContainer> indexer) {
-        assertFalse(indexer.isEnabled());
+        assertFalse("indexer is not enabled by default", indexer.isEnabled());
         indexer.setEnabled(true);
-        assertTrue(indexer.isEnabled());
+        assertTrue("indexer was enabled",indexer.isEnabled());
         indexer.setEnabled(false);
-        assertFalse(indexer.isEnabled());
+        assertFalse("indexer was disabled", indexer.isEnabled());
     }
 
+    @Before
+    public void setUp() throws URISyntaxException {
+        super.setUp();
+        getGraphDatabase().index().getNodeAutoIndexer().setEnabled(false);
+        getGraphDatabase().index().getRelationshipAutoIndexer().setEnabled(false);
+    }
 }
