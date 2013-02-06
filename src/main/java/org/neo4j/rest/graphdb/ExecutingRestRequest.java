@@ -139,15 +139,10 @@ public class ExecutingRestRequest implements RestRequest {
     }
 
     private InputStream toInputStream(Object data) {
-        try {
-            if (data instanceof InputStream) return (InputStream) data;
-            PipedInputStream inputStream = new PipedInputStream(8 * 1024);
-            PipedOutputStream outputStream = new PipedOutputStream(inputStream);
-            StreamJsonHelper.writeJsonTo(data, outputStream);
-            return inputStream;
-        } catch (IOException e) {
-            throw new RuntimeException("Error writing "+data+" to stream",e);
-        }
+        if (data instanceof InputStream) return (InputStream) data;
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream(1024 * 1024);
+        StreamJsonHelper.writeJsonTo(data, outputStream);
+        return new ByteArrayInputStream(outputStream.toByteArray());
     }
 
     @Override
