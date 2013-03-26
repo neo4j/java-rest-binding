@@ -137,7 +137,8 @@ public class ExecutingRestRequest implements RestRequest {
     public RequestResult post( String path, Object data ) {
         Builder builder = builder( path );
         if ( data != null ) {
-            builder = builder.entity( toInputStream(data), APPLICATION_JSON_TYPE );
+            Object payload = data instanceof InputStream ? data : JsonHelper.createJsonFrom(data);
+            builder = builder.entity( payload , APPLICATION_JSON_TYPE );
         }
         return RequestResult.extractFrom(builder.post(ClientResponse.class));
     }
@@ -145,9 +146,25 @@ public class ExecutingRestRequest implements RestRequest {
     private InputStream toInputStream(final Object data) {
         try {
             if (data instanceof InputStream) return (InputStream) data;
-            PipedInputStream inputStream = new PipedInputStream(8 * 1024);
+            final PipedInputStream inputStream = new PipedInputStream(8 * 1024);
             final PipedOutputStream outputStream = new PipedOutputStream(inputStream);
-            pool.submit(new Runnable() { public void run() { StreamJsonHelper.writeJsonTo(data, outputStream); } });
+            pool.submit(new Runnable() {
+                public void run() {                     
+                    StreamJsonHelper.writeJsonTo(data, outputStream);
+                    try {
+                        outputStream.close();
+                    } catch (IOException e) {
+                        System.err.println("Error closing output stream for sent data "+e.getMessage());
+                        // ignore
+                    }
+                    try {
+                        inputStream.close();
+                    } catch (IOException e) {
+                        System.err.println("Error closing input stream for sent data "+e.getMessage());
+                        // ignore
+                    }
+                }
+            });
             return inputStream;
         } catch (IOException e) {
             throw new RuntimeException("Error writing "+data+" to stream",e);
