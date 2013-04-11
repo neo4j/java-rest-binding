@@ -35,6 +35,7 @@ import org.neo4j.rest.graphdb.traversal.RestTraverser;
 import org.neo4j.rest.graphdb.util.QueryResult;
 import org.neo4j.rest.graphdb.util.ResultConverter;
 
+import java.util.Collection;
 import java.util.Map;
 import java.util.Set;
 
@@ -141,4 +142,16 @@ public interface RestAPI {
     void startAutoIndexingProperty(Class forClass, String s);
 
     void stopAutoIndexingProperty(Class forClass, String s);
+
+    void addLabel(String path, String label);
+
+    void removeLabel(String path, String label);
+
+    Collection<String> getLabels(String path);
+
+    void addLabels(String path, String... labels);
+
+    Iterable<RestNode> getNodesByLabel(String label);
+
+    Iterable<RestNode> getNodesByLabelAndProperty(String label, String property, Object value);
 }

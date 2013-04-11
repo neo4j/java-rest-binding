@@ -38,6 +38,7 @@ import org.neo4j.rest.graphdb.util.Config;
 import org.neo4j.rest.graphdb.util.QueryResult;
 import org.neo4j.rest.graphdb.util.ResultConverter;
 
+import java.util.Collection;
 import java.util.Map;
 import java.util.Set;
 
@@ -310,5 +311,35 @@ public class RestAPIFacade implements RestAPI {
         } finally {
             transaction.finish();
         }
+    }
+
+    @Override
+    public void addLabel(String path, String label) {
+        current().addLabel(path,label);
+    }
+
+    @Override
+    public void removeLabel(String path, String label) {
+        current().removeLabel(path,label);
+    }
+
+    @Override
+    public Collection<String> getLabels(String path) {
+        return current().getLabels(path);
+    }
+
+    @Override
+    public void addLabels(String path, String... labels) {
+        current().addLabels(path,labels);
+    }
+
+    @Override
+    public Iterable<RestNode> getNodesByLabel(String label) {
+        return current().getNodesByLabel(label);
+    }
+
+    @Override
+    public Iterable<RestNode> getNodesByLabelAndProperty(String label, String property, Object value) {
+        return current().getNodesByLabelAndProperty(label,property,value);
     }
 }

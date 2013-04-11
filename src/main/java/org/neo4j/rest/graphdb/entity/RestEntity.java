@@ -85,7 +85,7 @@ public class RestEntity implements PropertyContainer, UpdatableRestResult<RestEn
         return this.propertyData;
     }
 
-    private boolean hasToUpdateProperties() {
+    protected boolean hasToUpdateProperties() {
         if (this.propertyData == null) return true;
         return restApi.hasToUpdate(this.lastTimeFetchedPropertyData);
     }

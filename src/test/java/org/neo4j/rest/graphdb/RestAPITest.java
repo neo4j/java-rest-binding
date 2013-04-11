@@ -19,9 +19,8 @@
  */
 package org.neo4j.rest.graphdb;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static java.util.Arrays.asList;
+import static org.junit.Assert.*;
 import static org.neo4j.helpers.collection.MapUtil.map;
 
 import java.util.HashMap;
@@ -41,10 +40,11 @@ import org.neo4j.rest.graphdb.index.RestIndexManager;
 import org.neo4j.rest.graphdb.util.TestHelper;
 
 public class RestAPITest extends RestTestBase {
-	
-	private RestAPI restAPI;
-	
-	@Before
+
+    private RestAPI restAPI;
+    public static final Label LABEL_FOO = DynamicLabel.label("FOO");
+
+    @Before
 	public void init(){
 		this.restAPI = ((RestGraphDatabase)getRestGraphDb()).getRestAPI();
 	}
@@ -309,5 +309,48 @@ public class RestAPITest extends RestTestBase {
         assertEquals("Neo4j",rel2.getProperty("at"));
         final RestRelationship rel3 = restAPI.getOrCreateRelationship(index, "uid", "41", michael, david, "KNOWS", map("at", "Neo4j"));
         assertEquals(false, rel3.equals(rel1));
+    }
+
+    @Test
+    public void testGetNodeLabel() {
+        RestNode node = restAPI.createNode(map());
+        node.addLabel(LABEL_FOO);
+        int count=0;
+        for (Label label1 : node.getLabels()) {
+            assertEquals(LABEL_FOO.name(),label1.name());
+            count++;
+        }
+        assertEquals("one label",1,count);
+    }
+    @Test
+    public void testRemoveNodeLabel() {
+        RestNode node = restAPI.createNode(map());
+        node.addLabel(LABEL_FOO);
+        node.removeLabel(LABEL_FOO);
+        assertFalse(node.getLabels().iterator().hasNext());
+    }
+
+    @Test
+    public void testGetNodeByLabel() throws Exception {
+        RestNode node = restAPI.createNode(map());
+        node.addLabel(LABEL_FOO);
+        int count=0;
+        for (RestNode restNode : restAPI.getNodesByLabel(LABEL_FOO.name())) {
+            assertEquals(node,restNode);
+            count++;
+        }
+        assertEquals("one node with label",1,count);
+    }
+
+    @Test
+    public void testGetNodeByLabelAndProperty() throws Exception {
+        RestNode node = restAPI.createNode(map("name","foo bar"));
+        node.addLabel(LABEL_FOO);
+        int count=0;
+        for (RestNode restNode : restAPI.getNodesByLabelAndProperty(LABEL_FOO.name(),"name","foo bar")) {
+            assertEquals(node,restNode);
+            count++;
+        }
+        assertEquals("one node with label",1,count);
     }
 }

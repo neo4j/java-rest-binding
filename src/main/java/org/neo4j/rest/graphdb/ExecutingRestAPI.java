@@ -22,6 +22,7 @@ package org.neo4j.rest.graphdb;
 import org.neo4j.graphdb.*;
 import org.neo4j.graphdb.index.IndexHits;
 import org.neo4j.graphdb.traversal.TraversalDescription;
+import org.neo4j.helpers.collection.IterableWrapper;
 import org.neo4j.helpers.collection.MapUtil;
 import org.neo4j.index.lucene.ValueContext;
 import org.neo4j.rest.graphdb.batch.BatchCallback;
@@ -56,7 +57,9 @@ import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.util.*;
 
+import static java.util.Arrays.asList;
 import static javax.ws.rs.core.Response.Status.CREATED;
+import static org.neo4j.rest.graphdb.ExecutingRestRequest.encode;
 
 
 public class ExecutingRestAPI implements RestAPI {
@@ -228,6 +231,72 @@ public class ExecutingRestAPI implements RestAPI {
         RequestResult response = getRestRequest().delete(buildPathAutoIndexerProperties(forClass).append("/").append(s).toString());
         if (response.statusOtherThan(Status.NO_CONTENT)) {
             throw new IllegalStateException("received " + response);
+        }
+    }
+
+    @Override
+    public void addLabel(String path, String label) {
+        RequestResult response = restRequest.post(path, label);
+        if (response.statusOtherThan(Status.NO_CONTENT)) {
+            throw new IllegalStateException("received " + response);
+        }
+    }
+
+    @Override
+    public void removeLabel(String path, String label) {
+        RequestResult response = restRequest.delete(path + "/" + label);
+        if (response.statusOtherThan(Status.NO_CONTENT)) {
+            throw new IllegalStateException("received " + response);
+        }
+    }
+
+    @Override
+    public Collection<String> getLabels(String path) {
+        RequestResult response = restRequest.get(path);
+        if (response.statusOtherThan(Status.OK)) {
+            throw new IllegalStateException("received " + response);
+        }
+        return (Collection<String>) response.toEntity();
+    }
+
+    @Override
+    public Iterable<RestNode> getNodesByLabel(String label) {
+        RequestResult response = restRequest.get("label/" + encode(label) + "/nodes");
+        return toNodeIterableResult(response);
+    }
+    @Override
+    public Iterable<RestNode> getNodesByLabelAndProperty(String label, String property, Object value) {
+        RequestResult response = restRequest.get("label/" + encode(label) + "/nodes"+"?"+encode(property)+"="+ encode(quote(value)));
+        return toNodeIterableResult(response);
+    }
+
+    private String quote(Object value) {
+        if (value==null) return "null";
+        if (value instanceof String) return "\""+value+"\"";
+        return value.toString();
+    }
+
+    private Iterable<RestNode> toNodeIterableResult(final RequestResult response) {
+        if (response.statusOtherThan(Status.OK)) {
+            throw new IllegalStateException("received " + response);
+        }
+        final RestEntityExtractor extractor = new RestEntityExtractor(this);
+        Object col = response.toEntity();
+        if (!(col instanceof Collection)) throw new RuntimeException(String.format("Unexpected result, %s instead of collection", col!=null ? col.getClass() : null));
+        return new IterableWrapper<RestNode,Object>((Collection<Object>) col) {
+            @Override
+            protected RestNode underlyingObjectToObject(Object o) {
+                if (extractor.canHandle(o)) return (RestNode) extractor.convertFromRepresentation(o);
+                throw new IllegalStateException("Expected a node representation, got "+o);
+            }
+        };
+    }
+
+    @Override
+    public void addLabels(String path, String... labels) {
+        RequestResult response = restRequest.post(path, asList(labels));
+        if (response.statusOtherThan(Status.NO_CONTENT)) {
+            throw new IllegalStateException("error adding labels, received " + response);
         }
     }
 

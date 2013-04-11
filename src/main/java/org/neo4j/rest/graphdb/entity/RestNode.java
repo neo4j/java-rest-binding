@@ -22,21 +22,17 @@ package org.neo4j.rest.graphdb.entity;
 import static java.util.Arrays.asList;
 
 import java.net.URI;
-import java.util.Map;
+import java.util.*;
 
-import org.neo4j.graphdb.Direction;
-import org.neo4j.graphdb.Node;
-import org.neo4j.graphdb.Relationship;
-import org.neo4j.graphdb.RelationshipType;
-import org.neo4j.graphdb.ReturnableEvaluator;
-import org.neo4j.graphdb.StopEvaluator;
-import org.neo4j.graphdb.Traverser;
+import org.neo4j.graphdb.*;
 import org.neo4j.graphdb.Traverser.Order;
 import org.neo4j.helpers.collection.CombiningIterable;
 import org.neo4j.helpers.collection.IterableWrapper;
 import org.neo4j.helpers.collection.IteratorUtil;
+import org.neo4j.helpers.collection.IteratorWrapper;
 import org.neo4j.rest.graphdb.RestAPI;
 import org.neo4j.rest.graphdb.traversal.RestDirection;
+import org.neo4j.rest.graphdb.util.ResourceIterableWrapper;
 
 public class RestNode extends RestEntity implements Node {
     public RestNode( URI uri, RestAPI restApi ) {
@@ -136,5 +132,49 @@ public class RestNode extends RestEntity implements Node {
             if (hasRelationship(relationshipType,direction)) return true;
         }
         return false;
+    }
+
+    private final Set<String> labels=new HashSet<String>();
+
+    @Override
+    public void addLabel(Label label) {
+        restApi.addLabel(labelsPath(),label.name());
+        this.labels.add(label.name());
+    }
+
+    @Override
+    public void removeLabel(Label label) {
+        restApi.removeLabel(labelsPath(),label.name());
+        this.labels.remove(label.name());
+    }
+
+    @Override
+    public boolean hasLabel(Label label) {
+        updateLabels();
+        return this.labels.contains(label.name());
+    }
+
+    private void updateLabels() {
+        if (hasToUpdateProperties()) {
+            Collection<String> labels=restApi.getLabels(labelsPath());
+            this.labels.clear();
+            this.labels.addAll(labels);
+        }
+    }
+
+    @Override
+    public ResourceIterable<Label> getLabels() {
+        updateLabels();
+        return new ResourceIterableWrapper<Label,String>(labels) {
+            @Override
+            protected Label underlyingObjectToObject(String s) {
+                return DynamicLabel.label(s);
+            }
+        };
+    }
+
+    public String labelsPath() {
+        Object path = getStructuralData().get("labels");
+        return path==null ? null : path.toString();
     }
 }

@@ -21,9 +21,11 @@ package org.neo4j.rest.graphdb;
 
 
 import org.neo4j.graphdb.*;
+import org.neo4j.graphdb.schema.Schema;
+import org.neo4j.rest.graphdb.entity.RestNode;
 import org.neo4j.rest.graphdb.index.RestIndexManager;
 import org.neo4j.rest.graphdb.query.RestCypherQueryEngine;
-import org.neo4j.rest.graphdb.transaction.NullTransactionManager;
+import org.neo4j.rest.graphdb.util.ResourceIterableWrapper;
 import org.neo4j.rest.graphdb.util.ResultConverter;
 
 import javax.transaction.TransactionManager;
@@ -104,6 +106,30 @@ public class RestGraphDatabase extends AbstractRemoteDatabase {
     @Override
     public void shutdown() {
         restAPI.close();
+    }
+
+    @Override
+    public Node createNode(Label... labels) {
+        RestNode node = restAPI.createNode(null);
+        String[] labelNames = new String[labels.length];
+        for (int i = 0; i < labels.length; i++) labelNames[i]=labels[i].name();
+        restAPI.addLabels(node.labelsPath(),labelNames);
+        return node;
+    }
+
+    @Override
+    public ResourceIterable<Node> findNodesByLabelAndProperty(Label label, String property, Object value) {
+        Iterable<RestNode> nodes = restAPI.getNodesByLabelAndProperty(label.name(), property, value);
+        return new ResourceIterableWrapper<Node,RestNode>(nodes) {
+            protected Node underlyingObjectToObject(RestNode node) {
+                return node;
+            }
+        };
+    }
+
+    @Override
+    public Schema schema() {
+        throw new UnsupportedOperationException();
     }
 }
 
