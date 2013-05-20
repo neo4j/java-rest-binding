@@ -1,11 +1,4 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-         <parent>
-             <groupId>org.neo4j.build</groupId>
-             <artifactId>parent-pom</artifactId>
-             <version>35</version>
-             <relativePath />
-           </parent>
-    
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.neo4j</groupId>
     <artifactId>neo4j-rest-graphdb</artifactId>
@@ -16,7 +9,7 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <slf4j.version>1.6.1</slf4j.version>
-        <neo4j.version>1.8.1</neo4j.version>
+        <neo4j.version>1.8.2</neo4j.version>
         <jersey.version>1.4</jersey.version>
         <blueprints.version>1.2</blueprints.version>
         <gremlin.version>1.5</gremlin.version>
@@ -91,6 +84,7 @@ the relevant Commercial Agreement.
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
+            <version>4.11</version>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -299,10 +293,18 @@ the relevant Commercial Agreement.
     </build>
 
   <distributionManagement>
-    <site>
-      <id>neo4j-site</id>
-      <url>scpexe://static.neo4j.org/var/www/components.neo4j.org/${project.artifactId}/${project.version}</url>
-    </site>
+    <repository>
+      <id>releases@repo.neo4j.org</id>
+      <name>releases@repo.neo4j.org</name>
+      <uniqueVersion>false</uniqueVersion>
+      <url>http://m2.neo4j.org/content/repositories/releases</url>
+    </repository>
+    <snapshotRepository>
+      <id>snapshots@repo.neo4j.org</id>
+      <name>snapshots@repo.neo4j.org</name>
+      <uniqueVersion>false</uniqueVersion>
+      <url>http://m2.neo4j.org/content/repositories/snapshots</url>
+    </snapshotRepository>
   </distributionManagement>
 
 </project>

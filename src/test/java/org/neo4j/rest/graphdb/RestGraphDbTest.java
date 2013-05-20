@@ -32,9 +32,9 @@ import org.neo4j.graphdb.RelationshipType;
 import org.neo4j.helpers.collection.IteratorUtil;
 import org.neo4j.rest.graphdb.util.TestHelper;
 
+import static org.hamcrest.CoreMatchers.hasItems;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
-import static org.junit.internal.matchers.IsCollectionContaining.hasItems;
 
 public class RestGraphDbTest extends RestTestBase {
 
