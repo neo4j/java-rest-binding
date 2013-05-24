@@ -414,7 +414,7 @@ public class ExecutingRestAPI implements RestAPI {
         if (result.statusIs(Response.Status.OK)) {
             return (T)createExtractor().convertFromRepresentation(result);
         }
-        throw new RuntimeException(String.format("Error adding element %d %s %s to index %s", restEntity.getId(), key, value, index.getIndexName()));
+        throw new RuntimeException(String.format("Error adding element %d %s %s to index %s due to : %s", restEntity.getId(), key, value, index.getIndexName(),result.getText()));
     }
 
     @Override
@@ -445,7 +445,7 @@ public class ExecutingRestAPI implements RestAPI {
         if (result.statusIs(Response.Status.CREATED) || result.statusIs(Response.Status.OK)) {
             return (RestNode)createExtractor().convertFromRepresentation(result);
         }
-        throw new RuntimeException(String.format("Error retrieving or creating node for key %s and value %s with index %s", key, value, index.getIndexName()));
+        throw new RuntimeException(String.format("Error retrieving or creating node for key %s and value %s with index %s due to : %s ", key, value, index.getIndexName(), result.getText()));
     }
 
     @Override
@@ -457,7 +457,7 @@ public class ExecutingRestAPI implements RestAPI {
         if (result.statusIs(Response.Status.CREATED) || result.statusIs(Response.Status.OK)) {
             return (RestRelationship)createExtractor().convertFromRepresentation(result);
         }
-        throw new RuntimeException(String.format("Error retrieving or creating relationship for key %s and value %s with index %s", key, value, index.getIndexName()));
+        throw new RuntimeException(String.format("Error retrieving or creating relationship for key %s and value %s with index %s with details: %s", key, value, index.getIndexName(), result.getText()));
     }
 
     public <T> T getPlugin(Class<T> type){
