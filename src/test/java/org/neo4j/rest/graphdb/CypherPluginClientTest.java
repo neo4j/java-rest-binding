@@ -39,6 +39,11 @@ public class CypherPluginClientTest extends RestTestBase {
     private MatrixDataGraph embeddedMatrixdata;
     private MatrixDataGraph restMatrixData;
 
+    public CypherPluginClientTest( String url )
+    {
+        super( url );
+    }
+
 
     @Before
     public void init(){

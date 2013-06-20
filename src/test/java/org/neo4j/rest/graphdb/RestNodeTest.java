@@ -37,9 +37,14 @@ public class RestNodeTest extends RestTestBase  {
 	private MatrixDataGraph embeddedMatrixdata;
 	private MatrixDataGraph restMatrixData;
 	private Node neo;
-	
 
-	@Before
+    public RestNodeTest( String url )
+    {
+        super( url );
+    }
+
+
+    @Before
 	public void createMatrixdata() {
 		embeddedMatrixdata = new MatrixDataGraph(getGraphDatabase()).createNodespace();
 		restMatrixData = new MatrixDataGraph(getRestGraphDb());

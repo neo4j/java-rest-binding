@@ -24,8 +24,10 @@ import static org.junit.Assert.assertEquals;
 import static org.neo4j.helpers.collection.MapUtil.map;
 
 import org.junit.Assert;
+import org.junit.Assume;
 import org.junit.Before;
 import org.junit.Test;
+
 import org.neo4j.graphdb.Direction;
 import org.neo4j.graphdb.DynamicRelationshipType;
 import org.neo4j.graphdb.Node;
@@ -42,12 +44,23 @@ import org.neo4j.rest.graphdb.util.TestHelper;
 public class BatchRestAPITest extends RestTestBase {
     public static final DynamicRelationshipType RELATIONSHIP_TYPE = DynamicRelationshipType.withName("foo");
     private RestAPI restAPI;
-  
+
+    public BatchRestAPITest( String url )
+    {
+        super( url );
+    }
+
     // TODO transaction check, exception handling if an exception happened in the server
 
     @Before
     public void init(){
         this.restAPI = ((RestGraphDatabase)getRestGraphDb()).getRestAPI();
+    }
+
+    // TODO: skip https tests until https://github.com/neo4j/neo4j/pull/891 has been merged
+    @Before
+    public void checkHttp() {
+        Assume.assumeFalse(url.startsWith( "https" ));
     }
     
     @Test

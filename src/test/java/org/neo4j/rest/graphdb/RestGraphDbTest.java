@@ -38,6 +38,11 @@ import static org.junit.matchers.JUnitMatchers.hasItems;
 
 public class RestGraphDbTest extends RestTestBase {
 
+    public RestGraphDbTest( String url )
+    {
+        super( url );
+    }
+
     @Test
     public void testGetRefNode() {
         Node refNode = getRestGraphDb().getReferenceNode();

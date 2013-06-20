@@ -30,6 +30,11 @@ import org.neo4j.rest.graphdb.util.TestHelper;
 
 public class RestEntityTest extends RestTestBase  {
 
+    public RestEntityTest( String url )
+    {
+        super( url );
+    }
+
     @Test
     public void testSetProperty() {
         getRestGraphDb().getReferenceNode().setProperty( "name", "test" );

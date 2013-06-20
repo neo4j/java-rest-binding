@@ -44,8 +44,13 @@ public class MatrixDatabaseRestTest extends RestTestBase{
 	
 	 private MatrixDataGraph embeddedmdg;
 	 private MatrixDataGraph restmdg;
-	
-	 @Before
+
+    public MatrixDatabaseRestTest( String url )
+    {
+        super( url );
+    }
+
+    @Before
      public void matrixTestSetUp() {
 		 	//fill server db with matrix nodes
 		 this.embeddedmdg = new MatrixDataGraph(getGraphDatabase()).createNodespace();

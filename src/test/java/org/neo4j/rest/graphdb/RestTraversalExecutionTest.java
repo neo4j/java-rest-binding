@@ -28,6 +28,11 @@ import org.neo4j.graphdb.traversal.Traverser;
 import org.neo4j.rest.graphdb.traversal.RestTraversal;
 
 public class RestTraversalExecutionTest extends RestTestBase {
+    public RestTraversalExecutionTest( String url )
+    {
+        super( url );
+    }
+
     @Test
     public void testTraverseToNeighbour() {
         final Relationship rel = relationship();

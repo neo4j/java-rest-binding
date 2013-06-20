@@ -21,6 +21,7 @@ package org.neo4j.rest.graphdb;
 
 import org.junit.After;
 import org.junit.Assert;
+import org.junit.Assume;
 import org.junit.Before;
 import org.junit.Test;
 import org.neo4j.graphdb.*;
@@ -42,7 +43,20 @@ import static org.neo4j.helpers.collection.MapUtil.map;
 public class BatchRestAPITransactionTest extends RestTestBase {
     private RestAPI restAPI;
 
+    public BatchRestAPITransactionTest( String url )
+    {
+        super( url );
+    }
+
     // TODO transaction check, exception handling if an exception happened in the server
+
+
+    // TODO: skip https tests until https://github.com/neo4j/neo4j/pull/891 has been merged
+    @Before
+    public void checkHttp()
+    {
+        Assume.assumeFalse( url.startsWith( "https" ) );
+    }
 
     @Before
     public void init() {
@@ -289,6 +303,8 @@ public class BatchRestAPITransactionTest extends RestTestBase {
     @Override
     @After
     public void tearDown() throws Exception {
-        restAPI.close();
+        if (restAPI!=null) {
+            restAPI.close();
+        }
     }
 }

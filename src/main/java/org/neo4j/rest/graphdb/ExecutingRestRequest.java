@@ -24,9 +24,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URLEncoder;
 import java.util.Map;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ThreadFactory;
+import java.util.regex.Pattern;
 
 import javax.ws.rs.core.MediaType;
 
@@ -40,7 +38,6 @@ import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.api.client.WebResource;
 import com.sun.jersey.api.client.WebResource.Builder;
 import com.sun.jersey.api.client.filter.HTTPBasicAuthFilter;
-import org.neo4j.rest.graphdb.util.StreamJsonHelper;
 
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON_TYPE;
 
@@ -50,6 +47,8 @@ public class ExecutingRestRequest implements RestRequest {
     private final String baseUri;
     private final UserAgent userAgent = new UserAgent();
     private final Client client;
+
+    private static final Pattern pattern = Pattern.compile("^https?://.*");
 
     public ExecutingRestRequest( String baseUri ) {
         this( baseUri, null, null );
@@ -105,7 +104,9 @@ public class ExecutingRestRequest implements RestRequest {
     }
 
     private String pathOrAbsolute( String path ) {
-        if ( path.startsWith( "http://" ) ) return path;
+        if (pattern.matcher(path).matches()) {
+            return path;
+        }
         return baseUri + "/" + path;
     }
 
