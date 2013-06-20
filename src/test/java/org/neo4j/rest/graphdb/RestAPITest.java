@@ -43,8 +43,13 @@ import org.neo4j.rest.graphdb.util.TestHelper;
 public class RestAPITest extends RestTestBase {
 	
 	private RestAPI restAPI;
-	
-	@Before
+
+    public RestAPITest( String url )
+    {
+        super( url );
+    }
+
+    @Before
 	public void init(){
 		this.restAPI = ((RestGraphDatabase)getRestGraphDb()).getRestAPI();
 	}

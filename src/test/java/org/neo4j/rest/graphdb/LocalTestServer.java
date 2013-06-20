@@ -51,19 +51,15 @@ import static java.util.Arrays.asList;
  */
 public class LocalTestServer {
     private CommunityNeoServer neoServer;
-    private final int port;
-    private final String hostname;
     protected String propertiesFile = "test-db.properties";
     private final ImpermanentGraphDatabase graphDatabase;
     private String userAgent;
 
     public LocalTestServer() {
-        this("localhost",7473);
+        this("localhost");
     }
 
-    public LocalTestServer(String hostname, int port) {
-        this.port = port;
-        this.hostname = hostname;
+    public LocalTestServer(String hostname) {
         graphDatabase = new ImpermanentGraphDatabase();
     }
 
@@ -109,10 +105,6 @@ public class LocalTestServer {
             public void destroy() { }
         },"/*");
         neoServer = new CommunityNeoServer(new PropertyFileConfigurator(new File(url.getPath()))) {
-            @Override
-            protected int getWebServerPort() {
-                return port;
-            }
 
             @Override
             protected Database createDatabase() {
@@ -149,14 +141,6 @@ public class LocalTestServer {
             System.err.println("Error stopping server: "+e.getMessage());
         }
         neoServer=null;
-    }
-
-    public int getPort() {
-        return port;
-    }
-
-    public String getHostname() {
-        return hostname;
     }
 
     public LocalTestServer withPropertiesFile(String propertiesFile) {

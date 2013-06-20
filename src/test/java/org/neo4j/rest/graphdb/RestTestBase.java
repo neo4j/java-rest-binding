@@ -24,30 +24,59 @@ import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
+import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
+
 import org.neo4j.graphdb.Direction;
 import org.neo4j.graphdb.GraphDatabaseService;
 import org.neo4j.graphdb.Node;
 import org.neo4j.graphdb.Relationship;
 import org.neo4j.helpers.collection.IteratorUtil;
+import org.neo4j.server.configuration.Configurator;
+import org.neo4j.server.security.KeyStoreFactory;
+import org.neo4j.server.security.KeyStoreInformation;
 import org.neo4j.tooling.GlobalGraphOperations;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
 import java.net.URISyntaxException;
+import java.security.KeyStore;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.Iterator;
+import java.util.Properties;
+
+import javax.net.ssl.KeyManagerFactory;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.TrustManagerFactory;
 
 import static org.junit.Assert.assertEquals;
 
+@RunWith(Parameterized.class)
 public class RestTestBase {
 
     private GraphDatabaseService restGraphDb;
-    private static final String HOSTNAME = "localhost";
-    private static final int PORT = 7473;
     private static LocalTestServer neoServer;
-    public static final String SERVER_ROOT = "http://" + HOSTNAME + ":" + PORT;
-    protected static final String SERVER_ROOT_URI = SERVER_ROOT + "/db/data/";
-    private static final String SERVER_CLEANDB_URI = SERVER_ROOT + "/cleandb/secret-key";
-    private static final String CONFIG = RestTestBase.class.getResource("/neo4j-server.properties").getFile();
+
+    protected static final String SERVER_ROOT_URI = "http://localhost:7473/db/data/"; // only used for tryConnect
+    //private static final String SERVER_CLEANDB_URI = SERVER_ROOT + "/cleandb/secret-key";
+    private static final String CONFIG = "neo4j-server.properties";
+    private static Properties properties = new Properties(  );
+    protected String url;
+
+    @Parameterized.Parameters(name = "{index}: URL {0}")
+    public static Collection<String[]> data() {
+        return Arrays.asList(new String[][] { {"http://localhost:7473"}, {"https://localhost:7472" }});
+    }
+
+    public RestTestBase(String url) {
+        this.url = url;
+    }
 
     static {
+        readProperties();
+        setupJvmKeystore();
         initServer();
     }
 
@@ -55,7 +84,7 @@ public class RestTestBase {
         if (neoServer!=null) {
             neoServer.stop();
         }
-        neoServer = new LocalTestServer(HOSTNAME,PORT).withPropertiesFile("neo4j-server.properties");
+        neoServer = new LocalTestServer().withPropertiesFile(CONFIG);
     }
 
     @BeforeClass
@@ -64,13 +93,49 @@ public class RestTestBase {
         tryConnect();
     }
 
+    /**
+     * configure keystore to be used for https clients
+     */
+    private static void setupJvmKeystore()
+    {
+        try
+        {
+            KeyStoreInformation keyStoreInformation = new KeyStoreFactory().createKeyStore(
+                    File.createTempFile( "keystore" , "key"),
+                    new File( (String) properties.get( Configurator.WEBSERVER_HTTPS_KEY_PATH_PROPERTY_KEY ) ),
+                    new File( (String) properties.get( Configurator.WEBSERVER_HTTPS_CERT_PATH_PROPERTY_KEY ) ) );
+            KeyStore ks = KeyStore.getInstance( "JKS" );
+            ks.load(new FileInputStream(keyStoreInformation.getKeyStorePath()), keyStoreInformation.getKeyStorePassword());
+            TrustManagerFactory tmf = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
+            tmf.init(ks);
+            KeyManagerFactory kmf = KeyManagerFactory.getInstance(KeyManagerFactory.getDefaultAlgorithm());
+            kmf.init(ks, keyStoreInformation.getKeyPassword());
+            SSLContext ctx = SSLContext.getInstance("TLS");
+            ctx.init(kmf.getKeyManagers(), tmf.getTrustManagers(), null);
+            SSLContext.setDefault(ctx);
+        }
+        catch ( Exception e )
+        {
+            throw new RuntimeException( e );
+        }
+    }
+
+    private static void readProperties()
+    {
+        try {
+            properties.load( RestTestBase.class.getResourceAsStream( "/" + CONFIG ) );
+        } catch (IOException e ) {
+            throw new RuntimeException( e );
+        }
+    }
+
     private static void tryConnect() throws InterruptedException {
         int retryCount = 3;
         for (int i = 0; i < retryCount; i++) {
             try {
-                RequestResult result = new ExecutingRestRequest(SERVER_ROOT_URI).get("");
+                RequestResult result = new ExecutingRestRequest( SERVER_ROOT_URI ).get("");
                 assertEquals(200, result.getStatus());
-                System.err.println("Successful HTTP connection to "+SERVER_ROOT_URI);
+                System.err.println("Successful HTTP connection to "+ SERVER_ROOT_URI );
                 return;
             } catch (Exception e) {
                 System.err.println("Error retrieving ROOT URI " + e.getMessage());
@@ -82,7 +147,12 @@ public class RestTestBase {
     @Before
     public void setUp() throws URISyntaxException {
         neoServer.cleanDb();
-        restGraphDb = new RestGraphDatabase(SERVER_ROOT_URI);
+        restGraphDb = new RestGraphDatabase( getServerRootUri() );
+    }
+
+    private String getServerRootUri()
+    {
+        return url + "/db/data";
     }
 
     @After
@@ -105,7 +175,7 @@ public class RestTestBase {
     protected Node node() {
         return restGraphDb.getReferenceNode();
     }
-    
+
     protected GraphDatabaseService getGraphDatabase() {
     	return neoServer.getGraphDatabase();
     }

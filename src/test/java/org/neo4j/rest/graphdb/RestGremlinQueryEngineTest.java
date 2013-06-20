@@ -41,7 +41,12 @@ public class RestGremlinQueryEngineTest extends RestTestBase {
     private RestAPI restAPI;
     private MatrixDataGraph embeddedMatrixdata;
     private MatrixDataGraph restMatrixData;
-    
+
+    public RestGremlinQueryEngineTest( String url )
+    {
+        super( url );
+    }
+
     @Before
     public void init() throws Exception {
         embeddedMatrixdata = new MatrixDataGraph(getGraphDatabase()).createNodespace();

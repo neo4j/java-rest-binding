@@ -26,13 +26,11 @@ import java.util.Map;
 import org.neo4j.graphdb.Direction;
 import org.neo4j.graphdb.GraphDatabaseService;
 import org.neo4j.graphdb.Node;
+import org.neo4j.graphdb.NotFoundException;
 import org.neo4j.graphdb.Relationship;
 import org.neo4j.graphdb.Transaction;
 import org.neo4j.graphdb.index.Index;
 import org.neo4j.graphdb.index.IndexManager;
-import org.neo4j.graphdb.index.ReadableIndex;
-import org.neo4j.graphdb.index.RelationshipIndex;
-import org.neo4j.rest.graphdb.index.RestAutoIndexer;
 import org.neo4j.tooling.GlobalGraphOperations;
 
 /**
@@ -60,14 +58,14 @@ public class Neo4jDatabaseCleaner {
     }
 
     private void removeNodes(Map<String, Object> result) {
-        Node refNode = graph.getReferenceNode();
+        Node refNode = getReferenceNodeOrNull();
         int nodes = 0, relationships = 0;
         for (Node node : GlobalGraphOperations.at(graph).getAllNodes()) {
             for (Relationship rel : node.getRelationships(Direction.OUTGOING)) {
                 rel.delete();
                 relationships++;
             }
-            if (!refNode.equals(node)) {
+            if (!node.equals(refNode)) {
                 node.delete();
                 nodes++;
             }
@@ -75,6 +73,15 @@ public class Neo4jDatabaseCleaner {
         result.put("nodes", nodes);
         result.put("relationships", relationships);
 
+    }
+
+    private Node getReferenceNodeOrNull()
+    {
+        try {
+            return graph.getReferenceNode();
+        } catch (NotFoundException e) {
+            return null;
+        }
     }
 
     private void clearIndex(Map<String, Object> result) {

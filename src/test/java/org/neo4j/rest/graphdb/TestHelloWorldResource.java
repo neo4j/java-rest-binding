@@ -32,6 +32,11 @@ import org.junit.Test;
 public class TestHelloWorldResource extends RestTestBase {
      private RestAPI restAPI;
 
+    public TestHelloWorldResource( String url )
+    {
+        super( url );
+    }
+
     @Before
     public void init(){
         this.restAPI = ((RestGraphDatabase)getRestGraphDb()).getRestAPI();
@@ -39,7 +44,7 @@ public class TestHelloWorldResource extends RestTestBase {
 
     @Test
     public void testHelloWorldService() throws Exception {
-        HelloWorldService hws = this.restAPI.getService(HelloWorldService.class, SERVER_ROOT+"/test");
+        HelloWorldService hws = this.restAPI.getService(HelloWorldService.class, url + "/test");
         assertEquals("get 0", hws.get(0));
         //assertEquals("put 0:post", hws.put(0, "put"));
         //assertEquals("post 0:post", hws.post(0, "post"));

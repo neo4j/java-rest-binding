@@ -42,6 +42,11 @@ public class RestIndexTest extends RestTestBase {
     private static final String NODE_INDEX_NAME = "NODE_INDEX";
     private static final String REL_INDEX_NAME = "REL_INDEX";
 
+    public RestIndexTest( String url )
+    {
+        super( url );
+    }
+
     @Test
     public void testAddToNodeIndex() {
         nodeIndex().add(node(), "name", "test");
