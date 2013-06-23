@@ -26,6 +26,7 @@ import static org.junit.Assert.assertTrue;
 import java.util.Collection;
 import java.util.Map;
 
+import org.junit.Assume;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -44,6 +45,13 @@ public class RestCypherQueryEngineTest extends RestTestBase {
     public RestCypherQueryEngineTest( String url )
     {
         super( url );
+    }
+
+    // TODO: skip https tests on JDK 6, for some weird unknown reason  javax.net.ssl.SSLException: java.net.SocketException: Broken pipe is thrown
+    @Before
+    public void checkJDK()
+    {
+        Assume.assumeFalse( url.startsWith( "https" ) && System.getProperty("java.version").startsWith("1.6"));
     }
 
     @Before
