@@ -57,12 +57,6 @@ public class BatchRestAPITest extends RestTestBase {
         this.restAPI = ((RestGraphDatabase)getRestGraphDb()).getRestAPI();
     }
 
-    // TODO: skip https tests until https://github.com/neo4j/neo4j/pull/891 has been merged
-    @Before
-    public void checkHttp() {
-        Assume.assumeFalse(url.startsWith( "https" ));
-    }
-    
     @Test
     public void testCreateNode(){
         TestBatchResult response =this.restAPI.executeBatch(new BatchCallback<TestBatchResult>() {

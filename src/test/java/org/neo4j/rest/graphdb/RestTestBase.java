@@ -74,12 +74,6 @@ public class RestTestBase {
         this.url = url;
     }
 
-    static {
-        readProperties();
-        setupJvmKeystore();
-        initServer();
-    }
-
     protected static void initServer() {
         if (neoServer!=null) {
             neoServer.stop();
@@ -89,6 +83,9 @@ public class RestTestBase {
 
     @BeforeClass
     public static void startDb() throws Exception {
+        readProperties();
+        setupJvmKeystore();
+        initServer();
         neoServer.start();
         tryConnect();
     }

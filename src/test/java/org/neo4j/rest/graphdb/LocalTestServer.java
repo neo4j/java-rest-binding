@@ -38,8 +38,10 @@ import javax.servlet.*;
 import javax.servlet.http.HttpServletRequest;
 import java.io.File;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URL;
+import java.net.URLDecoder;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
@@ -104,7 +106,8 @@ public class LocalTestServer {
 
             public void destroy() { }
         },"/*");
-        neoServer = new CommunityNeoServer(new PropertyFileConfigurator(new File(url.getPath()))) {
+        String path = getPathFromUrl(url);
+        neoServer = new CommunityNeoServer(new PropertyFileConfigurator(new File(path))) {
 
             @Override
             protected Database createDatabase() {
@@ -131,6 +134,14 @@ public class LocalTestServer {
             Thread.sleep(500);
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
+        }
+    }
+
+    private String getPathFromUrl(URL url) {
+        try {
+            return URLDecoder.decode(url.getPath(), "UTF-8");
+        } catch (UnsupportedEncodingException e) {
+            throw new RuntimeException("Error decoding file path",e);
         }
     }
 
