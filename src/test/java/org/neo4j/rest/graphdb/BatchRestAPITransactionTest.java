@@ -50,14 +50,6 @@ public class BatchRestAPITransactionTest extends RestTestBase {
 
     // TODO transaction check, exception handling if an exception happened in the server
 
-
-    // TODO: skip https tests until https://github.com/neo4j/neo4j/pull/891 has been merged
-    @Before
-    public void checkHttp()
-    {
-        Assume.assumeFalse( url.startsWith( "https" ) );
-    }
-
     @Before
     public void init() {
         System.setProperty(Config.CONFIG_BATCH_TRANSACTION,"true");

@@ -67,8 +67,8 @@ public class BatchRestAPI extends ExecutingRestAPI {
     
     
     @Override
-    public RestNode createRestNode(RequestResult requestResult) {
-        final long batchId = requestResult.getBatchId();
+    public RestNode createRestNode(RequestResult result) {
+        final long batchId = result.getBatchId();
         RestNode node = new RestNode("{"+batchId+"}", facade);
         (getRecordingRequest()).getOperations().addToRestOperation(batchId, node, new RestEntityExtractor(facade));
         return node;

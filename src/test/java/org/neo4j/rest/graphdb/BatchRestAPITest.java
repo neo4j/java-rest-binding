@@ -36,9 +36,11 @@ import org.neo4j.graphdb.index.Index;
 import org.neo4j.graphdb.index.IndexHits;
 import org.neo4j.graphdb.index.IndexManager;
 import org.neo4j.helpers.collection.IteratorUtil;
+import org.neo4j.index.impl.lucene.LuceneIndexImplementation;
 import org.neo4j.rest.graphdb.batch.BatchCallback;
 import org.neo4j.rest.graphdb.entity.RestNode;
 import org.neo4j.rest.graphdb.entity.RestRelationship;
+import org.neo4j.rest.graphdb.index.RestIndex;
 import org.neo4j.rest.graphdb.util.TestHelper;
 
 public class BatchRestAPITest extends RestTestBase {
@@ -89,7 +91,27 @@ public class BatchRestAPITest extends RestTestBase {
         assertEquals("node0", response.n1.getProperty("name"));      
         assertEquals("node1000", response.n2.getProperty("name"));
     }
-   
+
+
+    @Test
+    public void testCreateNodeUniquely() {
+        final RestIndex<Node> index = restAPI.createIndex(Node.class, "unique-node", LuceneIndexImplementation.EXACT_CONFIG);
+        TestBatchResult response = this.restAPI.executeBatch(new BatchCallback<TestBatchResult>() {
+            @Override
+            public TestBatchResult recordBatch(RestAPI batchRestApi) {
+                TestBatchResult result=new TestBatchResult();
+                result.n1 = restAPI.getOrCreateNode(index, "uid", "42", map("name", "Michael"));
+                result.n2 = restAPI.getOrCreateNode(index, "uid", "42", map("name", "Michael2"));
+                return result;
+            }
+        });
+        assertEquals(response.n1,response.n2);
+        assertEquals("Michael",response.n1.getProperty("name"));
+        assertEquals("Michael",response.n2.getProperty("name"));
+//        final RestNode node3 = restAPI.getOrCreateNode(index, "uid", "41", map("name", "Emil"));
+//        assertEquals(false, node1.equals(node3));
+    }
+
     @Test
     public void testRestApiWorksRegardlessOfSource() {
         RestAPI leaked =this.restAPI.executeBatch(new BatchCallback<RestAPI>() {

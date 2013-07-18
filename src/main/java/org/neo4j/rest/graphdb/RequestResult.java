@@ -116,6 +116,9 @@ public class RequestResult {
         return entity;
     }
 
+    public boolean isMap() {
+        return toEntity() instanceof Map;
+    }
     public Map<?, ?> toMap() {
         return (Map<?, ?>) toEntity();
     }

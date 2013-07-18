@@ -105,18 +105,32 @@ public class ExecutingRestAPI implements RestAPI {
 
     @Override
     public RestNode createNode(Map<String, Object> props) {
-        RequestResult requestResult = restRequest.post("node", props);
-        return createRestNode(requestResult);
+        RequestResult result = restRequest.post("node", props);
+        RestNode node = createRestNode(result);
+        if (node==null) {
+            throw RestResultException.create(result);
+        }
+        return node;
     }
 
     @Override
-    public RestNode createRestNode(RequestResult requestResult) {
-        if (requestResult.statusOtherThan(CREATED)) {
-            final int status = requestResult.getStatus();
-            throw new RuntimeException("" + status);
+    public RestNode createRestNode(RequestResult result) {
+        if (result.statusIs(CREATED)) {
+            final String location = result.getLocation();
+            if (result.isMap()) {
+                return new RestNode(result.toMap(), facade);
+            }
+            return new RestNode(location, facade);
         }
-        final String location = requestResult.getLocation();
-        return new RestNode(location, facade);
+        if (result.statusIs(Status.OK)) {
+            return new RestNode(result.toMap(), facade);
+        }
+        if (result.statusIs(Status.NOT_FOUND)) {
+            throw new NotFoundException("Node not found");
+        }
+//        final int status = result.getStatus();
+//        throw new RuntimeException("Error executing request,status " + status+" message "+result.getText());
+        return null;
     }
 
     @Override
@@ -442,10 +456,10 @@ public class ExecutingRestAPI implements RestAPI {
         if (index==null || key == null || value==null) throw new IllegalArgumentException("Unique index "+index+" key "+key+" value must not be null");
         final Map<String, Object> data = MapUtil.map("key", key, "value", value, "properties", properties);
         final RequestResult result = getRestRequest().post(index.uniqueIndexPath(), data);
-        if (result.statusIs(Response.Status.CREATED) || result.statusIs(Response.Status.OK)) {
-            return (RestNode)createExtractor().convertFromRepresentation(result);
-        }
-        throw new RuntimeException(String.format("Error retrieving or creating node for key %s and value %s with index %s due to : %s ", key, value, index.getIndexName(), result.getText()));
+        RestNode node = createRestNode(result);
+        if (node!=null) return node;
+        String message=String.format("Error retrieving or creating node for key %s and value %s with index %s due to : %s ", key, value, index.getIndexName(), result.getText());
+        throw RestResultException.create(result,message);
     }
 
     @Override

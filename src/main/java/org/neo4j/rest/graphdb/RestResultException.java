@@ -23,13 +23,27 @@ import java.util.List;
 import java.util.Map;
 
 public class RestResultException extends RuntimeException {
-    public RestResultException(Object result) {
-        super(format(toMap(result)));
+    public RestResultException(Object result, String...messages) {
+        super(format(toMap(result),messages));
     }
 
-    private static String format(Map<?, ?> result) {
-        if (result==null) return "Unknown Exception";
+    public RestResultException(String...messages) {
+        super(format(messages));
+    }
+
+    private static String format(String[] messages) {
         StringBuilder sb = new StringBuilder();
+        if (messages==null || messages.length==0) return "";
+        for (String s : messages) {
+            sb.append(s).append("\n");
+        }
+        return sb.toString();
+    }
+
+    private static String format(Map<?, ?> result, String...messages) {
+        if (result==null && (messages==null || messages.length==0)) return "Unknown Exception";
+        StringBuilder sb = new StringBuilder();
+        sb.append(format(messages));
         sb.append(result.get("message")).append(" at\n");
         sb.append(result.get("exception")).append("\n");
         List<String> stacktrace = (List<String>) result.get("stacktrace");
@@ -56,5 +70,11 @@ public class RestResultException extends RuntimeException {
         if (!(result instanceof Map)) return null;
         return (Map<String, Object>) result;
 
+    }
+
+    static RestResultException create(RequestResult result, String...messages) {
+        if (result.isMap()) return new RestResultException(result.toMap(),messages);
+        if (messages.length==0) return new RestResultException("Error executing request,status " + result.getStatus()+" message "+result.getText());
+        return new RestResultException(messages);
     }
 }

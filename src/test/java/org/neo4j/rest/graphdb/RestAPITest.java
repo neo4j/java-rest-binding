@@ -50,14 +50,6 @@ public class RestAPITest extends RestTestBase {
         super( url );
     }
 
-    // TODO: skip https tests on JDK 6, for some weird unknown reason  javax.net.ssl.SSLException: java.net.SocketException: Broken pipe is thrown
-    @Before
-    public void checkJDK()
-    {
-        Assume.assumeFalse( url.startsWith( "https" ) && System.getProperty( "java.version" ).startsWith( "1.6" ) );
-    }
-
-
     @Before
 	public void init(){
 		this.restAPI = ((RestGraphDatabase)getRestGraphDb()).getRestAPI();

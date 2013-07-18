@@ -20,10 +20,7 @@
 package org.neo4j.rest.graphdb;
 
 
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.BeforeClass;
+import org.junit.*;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 
@@ -56,18 +53,20 @@ import static org.junit.Assert.assertEquals;
 @RunWith(Parameterized.class)
 public class RestTestBase {
 
-    private GraphDatabaseService restGraphDb;
-    private static LocalTestServer neoServer;
+    public static final String HTTP_URI = "http://localhost:7473";
+    public static final String HTTPS_URI = "https://localhost:7472";
 
-    protected static final String SERVER_ROOT_URI = "http://localhost:7473/db/data/"; // only used for tryConnect
-    //private static final String SERVER_CLEANDB_URI = SERVER_ROOT + "/cleandb/secret-key";
+    private GraphDatabaseService restGraphDb;
+
+    private static LocalTestServer neoServer;
+    protected static final String SERVER_ROOT_URI = HTTP_URI + "/db/data/"; // only used for tryConnect
     private static final String CONFIG = "neo4j-server.properties";
     private static Properties properties = new Properties(  );
     protected String url;
 
     @Parameterized.Parameters(name = "{index}: URL {0}")
     public static Collection<String[]> data() {
-        return Arrays.asList(new String[][] { {"http://localhost:7473"}, {"https://localhost:7472" }});
+        return Arrays.asList(new String[][] { {HTTP_URI}, {HTTPS_URI}});
     }
 
     public RestTestBase(String url) {
@@ -87,7 +86,8 @@ public class RestTestBase {
         setupJvmKeystore();
         initServer();
         neoServer.start();
-        tryConnect();
+        tryConnect(HTTP_URI + "/db/data/");
+        tryConnect(HTTPS_URI + "/db/data/");
     }
 
     /**
@@ -126,13 +126,13 @@ public class RestTestBase {
         }
     }
 
-    private static void tryConnect() throws InterruptedException {
+    private static void tryConnect(String serverRootUri) throws InterruptedException {
         int retryCount = 3;
         for (int i = 0; i < retryCount; i++) {
             try {
-                RequestResult result = new ExecutingRestRequest( SERVER_ROOT_URI ).get("");
+                RequestResult result = new ExecutingRestRequest(serverRootUri).get("");
                 assertEquals(200, result.getStatus());
-                System.err.println("Successful HTTP connection to "+ SERVER_ROOT_URI );
+                System.err.println("Successful HTTP connection to "+ serverRootUri);
                 return;
             } catch (Exception e) {
                 System.err.println("Error retrieving ROOT URI " + e.getMessage());
@@ -191,4 +191,7 @@ public class RestTestBase {
     public String getUserAgent() {
         return neoServer.getUserAgent();
     }
+
+    @Test
+    public void testNothing() throws Exception { }
 }
