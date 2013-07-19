@@ -256,6 +256,7 @@ public class RestAPIFacade implements RestAPI {
 
     public void close() {
         BatchTransaction.shutdown();
+        direct.close();
     }
 
     @Override
