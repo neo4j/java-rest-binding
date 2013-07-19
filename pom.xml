@@ -10,7 +10,7 @@
     <groupId>org.neo4j</groupId>
     <artifactId>neo4j-rest-graphdb</artifactId>
     <packaging>jar</packaging>
-    <version>1.9.2</version>
+    <version>1.9.3-SNAPSHOT</version>
     <name>Neo4j - Rest GraphDatabaseService Wrapper</name>
     <description>Neo4j REST binding implementing the GraphDatabaseService interface.</description>
     <properties>
