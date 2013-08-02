@@ -41,7 +41,12 @@ import org.neo4j.rest.graphdb.batch.BatchCallback;
 import org.neo4j.rest.graphdb.entity.RestNode;
 import org.neo4j.rest.graphdb.entity.RestRelationship;
 import org.neo4j.rest.graphdb.index.RestIndex;
+import org.neo4j.rest.graphdb.query.RestCypherQueryEngine;
+import org.neo4j.rest.graphdb.util.QueryResult;
 import org.neo4j.rest.graphdb.util.TestHelper;
+
+import java.util.List;
+import java.util.Map;
 
 public class BatchRestAPITest extends RestTestBase {
     public static final DynamicRelationshipType RELATIONSHIP_TYPE = DynamicRelationshipType.withName("foo");
@@ -155,6 +160,20 @@ public class BatchRestAPITest extends RestTestBase {
 
         });
 
+    }
+    public void testExecuteCypherInBatch() throws Exception {
+        TestBatchResult result = restAPI.executeBatch(new BatchCallback<TestBatchResult>() {
+            @Override
+            public TestBatchResult recordBatch(RestAPI batchRestApi) {
+                RestCypherQueryEngine engine = new RestCypherQueryEngine(batchRestApi);
+                TestBatchResult result = new TestBatchResult();
+                result.n1=engine.query("create (n {name:{name}}) return n", map("name", "Foo")).to(Node.class).singleOrNull();
+                result.n2=engine.query("start n=node(*) where has(n.name) and n.name={name} return n", map("name", "Foo")).to(Node.class).singleOrNull();
+                return result;
+            }
+        });
+        assertEquals("Foo",result.n1.getProperty("name"));
+        assertEquals(result.n1.getId(),result.n2.getId());
     }
 
     @Test
