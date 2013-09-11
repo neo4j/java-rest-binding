@@ -19,6 +19,8 @@
  */
 package org.neo4j.rest.graphdb.converter;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 import org.neo4j.rest.graphdb.RequestResult;
@@ -43,7 +45,17 @@ public class RestEntityExtractor implements RestResultConverter {
         if (value instanceof Map) {
             RestEntity restEntity = createRestEntity((Map) value);
             if (restEntity != null) return restEntity;
-        }       
+        }
+        if (value instanceof List) {
+            List listOfSomethings = new ArrayList();
+            for (Object containedValue: (List)value) {
+                Object convertedObj = convertFromRepresentation(containedValue);
+                if (convertedObj != null) {
+                    listOfSomethings.add(convertedObj);
+                }
+            }
+            return listOfSomethings;
+        }
         return value;
     }
 
