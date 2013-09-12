@@ -29,7 +29,6 @@ import org.neo4j.kernel.TransactionBuilder;
 import org.neo4j.kernel.guard.Guard;
 import org.neo4j.kernel.impl.core.KernelPanicEventGenerator;
 import org.neo4j.kernel.impl.core.NodeManager;
-import org.neo4j.kernel.impl.core.RelationshipTypeHolder;
 import org.neo4j.kernel.impl.nioneo.store.StoreId;
 import org.neo4j.kernel.impl.persistence.PersistenceSource;
 import org.neo4j.kernel.impl.transaction.LockManager;
@@ -98,11 +97,6 @@ abstract class AbstractRemoteDatabase implements GraphDatabaseAPI {
 
     @Override
     public IdGeneratorFactory getIdGeneratorFactory() {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public RelationshipTypeHolder getRelationshipTypeHolder() {
         throw new UnsupportedOperationException();
     }
 

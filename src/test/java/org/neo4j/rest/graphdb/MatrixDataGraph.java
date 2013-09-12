@@ -38,7 +38,17 @@ import org.neo4j.helpers.collection.MapUtil;
  * @since 03.08.11
  */
 public class MatrixDataGraph {
-	 /** specify relationship types*/
+
+    long getNeoNodeId() {
+        Transaction transaction = getGraphDatabase().beginTx();
+        try {
+            return getNeoNode().getId();
+        } finally {
+            transaction.success();transaction.finish();
+        }
+    }
+
+    /** specify relationship types*/
 	 public enum RelTypes implements RelationshipType{
 	     NEO_NODE,
 	     KNOWS,

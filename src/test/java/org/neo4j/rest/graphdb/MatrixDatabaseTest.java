@@ -19,17 +19,13 @@
  */
 package org.neo4j.rest.graphdb;
 
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import org.neo4j.graphdb.Direction;
-import org.neo4j.graphdb.GraphDatabaseService;
-import org.neo4j.graphdb.Node;
-import org.neo4j.graphdb.Path;
+import org.junit.*;
+import org.neo4j.graphdb.*;
 import org.neo4j.graphdb.index.Index;
 import org.neo4j.graphdb.index.IndexHits;
 import org.neo4j.graphdb.index.IndexManager;
 import org.neo4j.graphdb.traversal.*;
+import org.neo4j.graphdb.traversal.Traverser;
 import org.neo4j.helpers.Predicate;
 import org.neo4j.kernel.Traversal;
 import org.neo4j.rest.graphdb.MatrixDataGraph.RelTypes;
@@ -48,23 +44,32 @@ import static org.junit.Assert.assertTrue;
 public class MatrixDatabaseTest {
 	private static GraphDatabaseService graphDb;
 	private static MatrixDataGraph mdg;
+    private Transaction tx;
 
-	      @BeforeClass
-	      public static void setUp() {
+    @BeforeClass
+	      public static void beforeClass() {
                 graphDb =  new ImpermanentGraphDatabase();
                 mdg = new MatrixDataGraph(graphDb).createNodespace();
 	      }
 
 	      @AfterClass
-	      public static void tearDown() {
+	      public static void afterClass() {
 	          graphDb.shutdown();
 	      }
 
-	      
-	      
-	      
-           
-           @Test
+
+    @Before
+    public void setUp() throws Exception {
+        tx = mdg.getGraphDatabase().beginTx();
+    }
+
+    @After
+    public void tearDown() throws Exception {
+        tx.success();
+        tx.finish();
+    }
+
+    @Test
            public void checkNeoProperties() throws Exception {
         	   Node neoNode = mdg.getNeoNode();    
         	   boolean isSetupCorrectly = false;
@@ -109,14 +114,14 @@ public class MatrixDatabaseTest {
            
            @Test
            public void checkForIndex() throws Exception {
-        	   IndexManager index = graphDb.index();
-        	   assertTrue(index.existsForNodes("heroes"));
+               IndexManager index = graphDb.index();
+               assertTrue(index.existsForNodes("heroes"));
            }
            
            @Test
            public void checkForHeroesCollection() throws Exception {
-        	  Node heroesCollectionNode = mdg.getHeroesCollectionNode();
-        	  assertEquals( "Heroes Collection", heroesCollectionNode.getProperty("type") );
+               Node heroesCollectionNode = mdg.getHeroesCollectionNode();
+               assertEquals( "Heroes Collection", heroesCollectionNode.getProperty("type") );
            }
            
            @Test
@@ -225,13 +230,13 @@ public class MatrixDatabaseTest {
            @Test
            public void getMatrixHackers() throws Exception
            {
-                    
-               Traverser traverser = findHackers( mdg.getNeoNode() );
-               int numberOfHackers = 0;
-               for ( Path hackerPath : traverser ) {                  
-                   numberOfHackers++;                  
-               }              
-               assertEquals( 1, numberOfHackers );
+
+                   Traverser traverser = findHackers( mdg.getNeoNode() );
+                   int numberOfHackers = 0;
+                   for ( Path hackerPath : traverser ) {
+                       numberOfHackers++;
+                   }
+                   assertEquals( 1, numberOfHackers );
            }
 
           

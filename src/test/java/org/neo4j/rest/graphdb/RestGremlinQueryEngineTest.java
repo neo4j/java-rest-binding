@@ -36,6 +36,7 @@ import java.util.Collection;
 import static java.util.Arrays.asList;
 import static org.junit.Assert.assertEquals;
 
+@Ignore
 public class RestGremlinQueryEngineTest extends RestTestBase {
     private RestGremlinQueryEngine queryEngine;
     private RestAPI restAPI;

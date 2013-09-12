@@ -22,6 +22,7 @@ package org.neo4j.rest.graphdb;
 
 import org.neo4j.graphdb.*;
 import org.neo4j.graphdb.schema.Schema;
+import org.neo4j.kernel.impl.core.RelationshipTypeTokenHolder;
 import org.neo4j.rest.graphdb.entity.RestNode;
 import org.neo4j.rest.graphdb.index.RestIndexManager;
 import org.neo4j.rest.graphdb.query.RestCypherQueryEngine;
@@ -96,6 +97,11 @@ public class RestGraphDatabase extends AbstractRemoteDatabase {
     @Override
     public TransactionManager getTxManager() {
         return new BatchTransactionManager(restAPI); //new NullTransactionManager();
+    }
+
+    @Override
+    public RelationshipTypeTokenHolder getRelationshipTypeTokenHolder() {
+        return null;
     }
 
     @Override
