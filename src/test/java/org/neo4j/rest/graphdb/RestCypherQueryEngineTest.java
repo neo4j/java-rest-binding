@@ -19,11 +19,13 @@
  */
 package org.neo4j.rest.graphdb;
 
-import static java.util.Arrays.asList;
+import static java.util.Arrays.*;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 
 import org.junit.Assume;
@@ -33,7 +35,9 @@ import org.junit.Test;
 import org.neo4j.graphdb.Node;
 import org.neo4j.helpers.collection.IteratorUtil;
 import org.neo4j.helpers.collection.MapUtil;
+import org.neo4j.rest.graphdb.entity.RestNode;
 import org.neo4j.rest.graphdb.query.RestCypherQueryEngine;
+import org.neo4j.rest.graphdb.util.QueryResult;
 
 
 public class RestCypherQueryEngineTest extends RestTestBase {
@@ -84,7 +88,6 @@ public class RestCypherQueryEngineTest extends RestTestBase {
         final Node result = (Node) queryEngine.query(queryString, MapUtil.map("neoquery","name:Neo")).to(Node.class).single();
         assertEquals(embeddedMatrixdata.getNeoNode(), result);
     }
-    
     @Test
     public void testGetNeoNodeSingleProperty(){       
         final String queryString = "start n=node({neo}) return n.name";
@@ -105,6 +108,25 @@ public class RestCypherQueryEngineTest extends RestTestBase {
         final Node result = (Node) queryEngine.query(queryString, MapUtil.map("morpheusname","Morpheus")).to(Node.class).single();
         assertEquals("Cypher", result.getProperty("name"));
     }
+
+    @Test
+    public void testCollectClauseReturnsCollectionOfNodes(){
+        final String queryString = "start morpheus=node:heroes(name={morpheusname}) match (morpheus) -[:KNOWS]-> (person) return collect(person) as known_people";
+        final QueryResult qr= queryEngine.query(queryString, MapUtil.map("morpheusname", "Morpheus"));
+        final Collection<Map<String,Object>> result = IteratorUtil.asCollection(qr);
+
+        assertEquals(1, result.size());
+        Map<String,Object> firstEntry = result.iterator().next();
+        List nodes = (List)firstEntry.get("known_people");
+
+        for (Object anEntity: nodes) {
+            assertEquals(RestNode.class, anEntity.getClass());
+            Node aFriend = (Node)anEntity;
+            assertTrue(aFriend.getProperty("name").equals("Trinity") ||
+                       aFriend.getProperty("name").equals("Cypher"));
+        }
+
+    }
     
     @Test
     public void testGetArchitectViaMorpheusAndFilter(){
@@ -119,7 +141,6 @@ public class RestCypherQueryEngineTest extends RestTestBase {
         final String queryString = "start neo=node({neoId}) return neo.name, neo.type, neo.age";
         final Collection<Map<String,Object>> result = IteratorUtil.asCollection(queryEngine.query(queryString, MapUtil.map("neoId",getNeoId())));
         assertEquals(asList( MapUtil.map("neo.name", "Thomas Anderson", "neo.type","hero", "neo.age", 29 )),result); 
-        
     }
     
     @Test

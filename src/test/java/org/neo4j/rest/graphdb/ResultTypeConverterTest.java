@@ -24,13 +24,9 @@ import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.assertNull;
 import static junit.framework.Assert.assertTrue;
+import static org.junit.Assert.assertNotNull;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Hashtable;
-import java.util.Map;
+import java.util.*;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -43,6 +39,7 @@ import org.neo4j.rest.graphdb.converter.TypeInformation;
 import org.neo4j.rest.graphdb.entity.RestNode;
 import org.neo4j.rest.graphdb.entity.RestRelationship;
 import org.neo4j.rest.graphdb.traversal.SimplePath;
+import org.neo4j.rest.graphdb.util.QueryResult;
 
 /**
  * User: KBurchardi
@@ -78,6 +75,44 @@ public class ResultTypeConverterTest extends RestTestBase {
         Object result = converter.convertToResultType(MapUtil.map("self","http://localhost:7474/db/data/relationship/2", "data", MapUtil.map("propname", "testprop")), new TypeInformation(RestRelationship.class));
         assertEquals(RestRelationship.class, result.getClass());
         assertEquals("testprop", ((Relationship)result).getProperty("propname"));
+    }
+
+    @Test
+    public void testConvertArrayOfJSONDataToNodeList(){
+        String node1 = "http://localhost:7474/db/data/node/1";
+        String node2 = "http://localhost:7474/db/data/node/2";
+        Map node1Map = MapUtil.map("self",node1, "data", MapUtil.map("propname", "testprop"));
+        Map node2Map = MapUtil.map("self",node2, "data", MapUtil.map("propname", "testprop"));
+        List<Map> listOfJSONMaps = new ArrayList<Map>();
+        listOfJSONMaps.add(node1Map);
+        listOfJSONMaps.add(node2Map);
+
+        Object result = converter.convertToResultType(listOfJSONMaps, new TypeInformation(asList(new RestNode((String)null,null))));
+
+        assertTrue (result instanceof List);
+        List listResult = (List)result;
+        assertEquals(2,listResult.size());
+        Object val1 = listResult.get(0);
+        assertEquals(RestNode.class, val1.getClass());
+        assertEquals("testprop", ((Node)val1).getProperty("propname"));
+    }
+
+    @Test
+    public void testConvertArrayOfNormalMapsToMapOfSame(){
+        Map mapOfMaps1 = MapUtil.map("key","value1", "data", MapUtil.map("propname", "testprop"));
+        Map mapOfMaps2 = MapUtil.map("key","value2", "data", MapUtil.map("propname", "testprop"));
+        List<Map> listOfMOMs= new ArrayList<Map>();
+        listOfMOMs.add(mapOfMaps1);
+        listOfMOMs.add(mapOfMaps2);
+
+        Object result = converter.convertToResultType(listOfMOMs, new TypeInformation(asList(new Object())));
+
+        assertTrue (result instanceof List);
+        List listResult = (List)result;
+        assertEquals(2,listResult.size());
+        Object val1 = listResult.get(0);
+        assertTrue(val1 instanceof Map);
+        assertEquals("value1", ((Map)val1).get("key"));
     }
 
 
