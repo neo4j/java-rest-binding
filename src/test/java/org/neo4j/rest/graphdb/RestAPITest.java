@@ -24,13 +24,11 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.neo4j.helpers.collection.MapUtil.map;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.junit.Assert;
-import org.junit.Assume;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.*;
 import org.neo4j.graphdb.*;
 import org.neo4j.graphdb.index.Index;
 import org.neo4j.graphdb.index.IndexManager;
@@ -288,6 +286,17 @@ public class RestAPITest extends RestTestBase {
 		assertTrue(index.existsForNodes("indexName"));
 		assertTrue(index.existsForRelationships("indexName"));
 	}
+
+    @Test
+    @Ignore("Returned Location header too large for Jetty buffer")
+    public void testCreateUniqueNodeWithLargeStringValue() throws Exception {
+        final RestIndex<Node> index = restAPI.createIndex(Node.class, "unique-node", LuceneIndexImplementation.EXACT_CONFIG);
+        char[] data = new char[5000];
+        Arrays.fill(data,'a');
+        String largeString = String.valueOf(data);
+        final RestNode node1 = restAPI.getOrCreateNode(index, "uid", largeString, map("uid",largeString));
+        assertEquals(largeString,node1.getProperty("uid"));
+    }
 
     @Test
     public void testCreateNodeUniquely() {
