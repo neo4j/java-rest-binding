@@ -27,6 +27,8 @@ import static org.neo4j.rest.graphdb.RelationshipHasMatcher.match;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.neo4j.graphdb.DynamicLabel;
+import org.neo4j.graphdb.Label;
 import org.neo4j.graphdb.Node;
 import org.neo4j.graphdb.Relationship;
 import org.neo4j.rest.graphdb.MatrixDataGraph.RelTypes;
@@ -169,4 +171,12 @@ public class RestNodeTest extends RestTestBase  {
 		assertTrue(hasRelationship);		
 	}
 
+    @Test
+    public void testGetNodeLabels() throws Exception {
+        Label label = DynamicLabel.label("TestPerson");
+        Node node = getRestGraphDb().createNode(label);
+        assertTrue(node.hasLabel(label));
+        Node node2 = getRestGraphDb().getNodeById(node.getId());
+        assertTrue(node2.hasLabel(label));
+    }
 }

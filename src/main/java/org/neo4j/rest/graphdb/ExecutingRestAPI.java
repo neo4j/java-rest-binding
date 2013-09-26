@@ -65,7 +65,7 @@ import static org.neo4j.rest.graphdb.ExecutingRestRequest.encode;
 public class ExecutingRestAPI implements RestAPI {
 
     protected RestRequest restRequest;
-    private long propertyRefetchTimeInMillis = 1000;
+    private long propertyRefetchTimeInMillis = 10000;
     protected final RestAPI facade;
 
     protected ExecutingRestAPI(String uri, RestAPI facade) {

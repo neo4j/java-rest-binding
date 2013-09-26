@@ -78,11 +78,15 @@ public class RestEntity implements PropertyContainer, UpdatableRestResult<RestEn
     }    
    
     Map<String, Object> getPropertyData() {       
-        if (hasToUpdateProperties()) {            
-        	this.propertyData = restApi.getPropertiesFromEntity(this);
-            this.lastTimeFetchedPropertyData = System.currentTimeMillis();
+        if (hasToUpdateProperties()) {
+            doGetEntityData();
         }
         return this.propertyData;
+    }
+
+    protected void doGetEntityData() {
+        this.propertyData = restApi.getPropertiesFromEntity(this);
+        this.lastTimeFetchedPropertyData = System.currentTimeMillis();
     }
 
     protected boolean hasToUpdateProperties() {

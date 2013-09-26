@@ -29,7 +29,6 @@ import org.neo4j.graphdb.Traverser.Order;
 import org.neo4j.helpers.collection.CombiningIterable;
 import org.neo4j.helpers.collection.IterableWrapper;
 import org.neo4j.helpers.collection.IteratorUtil;
-import org.neo4j.helpers.collection.IteratorWrapper;
 import org.neo4j.rest.graphdb.RestAPI;
 import org.neo4j.rest.graphdb.traversal.RestDirection;
 import org.neo4j.rest.graphdb.util.ResourceIterableWrapper;
@@ -44,9 +43,15 @@ public class RestNode extends RestEntity implements Node {
     }
 
     public RestNode( Map<?, ?> data, RestAPI restApi ) {
-        super( data, restApi );
-    }    
-  
+        super(data, restApi);
+    }
+
+    @Override
+    protected void doGetEntityData() {
+        super.doGetEntityData();
+        if (labels.size()>0) updateLabels();
+    }
+
     public Relationship createRelationshipTo( Node toNode, RelationshipType type ) {
     	 return this.restApi.createRelationship(this, toNode, type, null);
     }
@@ -135,6 +140,7 @@ public class RestNode extends RestEntity implements Node {
     }
 
     private final Set<String> labels=new HashSet<String>();
+    private long lastLabelFetchTime = 0;
 
     @Override
     public void addLabel(Label label) {
@@ -155,11 +161,16 @@ public class RestNode extends RestEntity implements Node {
     }
 
     private void updateLabels() {
-        if (hasToUpdateProperties()) {
+        if (hasToUpdateLabels()) {
             Collection<String> labels=restApi.getLabels(labelsPath());
             this.labels.clear();
             this.labels.addAll(labels);
+            this.lastLabelFetchTime = System.currentTimeMillis();
         }
+    }
+
+    private boolean hasToUpdateLabels() {
+        return restApi.hasToUpdate(this.lastLabelFetchTime);
     }
 
     @Override
