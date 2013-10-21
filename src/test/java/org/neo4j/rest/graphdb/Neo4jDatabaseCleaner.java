@@ -54,7 +54,7 @@ public class Neo4jDatabaseCleaner {
             clearIndex(result);
             tx.success();
         } finally {
-            tx.finish();
+            tx.close();
         }
         return result;
     }

@@ -58,7 +58,7 @@ public class RestCypherQueryEngineTest extends RestTestBase {
         try {
             assertEquals(embeddedMatrixdata.getGraphDatabase().getReferenceNode(), result);
         } finally {
-            tx.success();tx.finish();
+            tx.success();tx.close();
         }
 
     }
@@ -75,7 +75,7 @@ public class RestCypherQueryEngineTest extends RestTestBase {
         try {
             assertEquals(node, result);
         } finally {
-            tx.success();tx.finish();
+            tx.success();tx.close();
         }
     }
 
@@ -99,7 +99,7 @@ public class RestCypherQueryEngineTest extends RestTestBase {
         try {
             assertEquals(embeddedMatrixdata.getNeoNode(), result);
         } finally {
-            tx.success();tx.finish();
+            tx.success();tx.close();
         }
     }
 
@@ -153,7 +153,7 @@ public class RestCypherQueryEngineTest extends RestTestBase {
         try {
             return  embeddedMatrixdata.getNeoNode().getId();
         } finally {
-            tx.success();tx.finish();
+            tx.success();tx.close();
         }
     }
    

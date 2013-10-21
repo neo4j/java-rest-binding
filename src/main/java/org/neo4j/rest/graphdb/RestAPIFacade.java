@@ -309,7 +309,7 @@ public class RestAPIFacade implements RestAPI {
             transaction.success();
             return batchResult;
         } finally {
-            transaction.finish();
+            transaction.close();
         }
     }
 

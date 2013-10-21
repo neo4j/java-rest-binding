@@ -22,10 +22,14 @@ package org.neo4j.rest.graphdb;
 
 import org.neo4j.graphdb.*;
 import org.neo4j.graphdb.schema.Schema;
+import org.neo4j.graphdb.traversal.BidirectionalTraversalDescription;
+import org.neo4j.graphdb.traversal.TraversalDescription;
 import org.neo4j.kernel.impl.core.RelationshipTypeTokenHolder;
 import org.neo4j.rest.graphdb.entity.RestNode;
 import org.neo4j.rest.graphdb.index.RestIndexManager;
 import org.neo4j.rest.graphdb.query.RestCypherQueryEngine;
+import org.neo4j.rest.graphdb.traversal.RestTraversal;
+import org.neo4j.rest.graphdb.traversal.RestTraversalDescription;
 import org.neo4j.rest.graphdb.util.ResourceIterableWrapper;
 import org.neo4j.rest.graphdb.util.ResultConverter;
 
@@ -135,6 +139,16 @@ public class RestGraphDatabase extends AbstractRemoteDatabase {
 
     @Override
     public Schema schema() {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public RestTraversalDescription traversalDescription() {
+        return RestTraversal.description();
+    }
+
+    @Override
+    public BidirectionalTraversalDescription bidirectionalTraversalDescription() {
         throw new UnsupportedOperationException();
     }
 }

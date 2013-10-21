@@ -27,16 +27,12 @@ import static org.junit.Assert.assertTrue;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import org.neo4j.graphdb.Direction;
-import org.neo4j.graphdb.Node;
-import org.neo4j.graphdb.Path;
-import org.neo4j.graphdb.Transaction;
+import org.neo4j.graphdb.*;
 import org.neo4j.graphdb.index.Index;
 import org.neo4j.graphdb.index.IndexHits;
 import org.neo4j.graphdb.index.IndexManager;
 import org.neo4j.graphdb.traversal.*;
-import org.neo4j.helpers.Predicate;
-import org.neo4j.kernel.Traversal;
+import org.neo4j.graphdb.traversal.Traverser;
 import org.neo4j.rest.graphdb.MatrixDataGraph.RelTypes;
 import org.neo4j.rest.graphdb.traversal.RestTraversal;
 import org.neo4j.rest.graphdb.traversal.RestTraversalDescription.ScriptLanguage;
@@ -61,7 +57,7 @@ public class MatrixDatabaseRestTest extends RestTestBase{
 	     Node node = embeddedmdg.getNeoNode();	    
 	     Assert.assertEquals( "the one", node.getProperty( "occupation" ) );
          } finally {
-             tx.success();tx.finish();
+             tx.success();tx.close();
          }
      }
 	 
@@ -134,7 +130,7 @@ public class MatrixDatabaseRestTest extends RestTestBase{
               Traverser heroesTraverserByProperties = getHeroesByNodeProperties();
               assertEquals( heroesTraverserRest.nodes().iterator().next().getId(), heroesTraverserByProperties.nodes().iterator().next().getId() );
           } finally {
-              tx.success();tx.finish();
+              tx.success();tx.close();
           }
       }
       
@@ -223,7 +219,8 @@ public class MatrixDatabaseRestTest extends RestTestBase{
        * @return the Traverser
        */
       private Traverser getHeroesByNodeProperties() {
-    	  TraversalDescription td = Traversal.description()          		  	
+          GraphDatabaseService db = this.embeddedmdg.getGraphDatabase();
+    	  TraversalDescription td = db.traversalDescription()
                 .breadthFirst()                        
                 .relationships( RelTypes.PERSONS_REFERENCE, Direction.OUTGOING )
                 .relationships( RelTypes.HEROES_REFERENCE, Direction.OUTGOING )
@@ -233,7 +230,7 @@ public class MatrixDatabaseRestTest extends RestTestBase{
                         return path.endNode().getProperty("type", "none").equals("hero") ? Evaluation.INCLUDE_AND_PRUNE : Evaluation.EXCLUDE_AND_CONTINUE;
                     }
                 });
-    	 return td.traverse(this.embeddedmdg.getGraphDatabase().getReferenceNode());
+          return td.traverse(db.getReferenceNode());
       }
 
 	

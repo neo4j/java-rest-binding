@@ -364,7 +364,7 @@ public class ExecutingRestAPI implements RestAPI {
             transaction.success();
             return batchResult;
         } finally {
-            transaction.finish();
+            transaction.close();
         }
 */
     }

@@ -13,7 +13,7 @@ The behavior of "transactions" changed in 1.8, in 1.7 they were no-op, i.e. just
 
 In 1.8 it tries to collect all operations within a tx as a batch-operation which will then be executed on the server.
 
-This has the implication that the results retrieved within that "tx" are not immediately available but only after you called tx.success and tx.finish
+This has the implication that the results retrieved within that "tx" are not immediately available but only after you called tx.success and tx.close
 
 
 

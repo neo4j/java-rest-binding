@@ -30,7 +30,7 @@ public class EmptyGraphTest extends RestTestBase {
     public void testGetReferenceNodeOnEmptyDbFails() {
         Transaction tx = getGraphDatabase().beginTx();
         getGraphDatabase().getReferenceNode().delete();
-        tx.success();tx.finish();
+        tx.success();tx.close();
         getRestGraphDb().getReferenceNode();
     }
 

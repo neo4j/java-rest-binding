@@ -19,8 +19,7 @@
  */
 package org.neo4j.rest.graphdb;
 
-import org.mortbay.component.LifeCycle;
-import org.mortbay.jetty.Server;
+import org.eclipse.jetty.util.component.LifeCycle;
 import org.neo4j.graphdb.GraphDatabaseService;
 import org.neo4j.server.CommunityNeoServer;
 import org.neo4j.server.configuration.PropertyFileConfigurator;
@@ -30,7 +29,7 @@ import org.neo4j.server.modules.RESTApiModule;
 import org.neo4j.server.modules.ServerModule;
 import org.neo4j.server.modules.ThirdPartyJAXRSModule;
 import org.neo4j.server.preflight.PreFlightTasks;
-import org.neo4j.server.web.Jetty6WebServer;
+import org.neo4j.server.web.Jetty9WebServer;
 import org.neo4j.server.web.WebServer;
 import org.neo4j.test.ImpermanentGraphDatabase;
 
@@ -71,7 +70,7 @@ public class LocalTestServer {
         if (neoServer!=null) throw new IllegalStateException("Server already running");
         URL url = getClass().getResource("/" + propertiesFile);
         if (url==null) throw new IllegalArgumentException("Could not resolve properties file "+propertiesFile);
-        final Jetty6WebServer jettyWebServer = new Jetty6WebServer(); /* {
+        final Jetty9WebServer jettyWebServer = new Jetty9WebServer(); /* {
             @Override
             protected void startJetty() {
                 final Server jettyServer = getJetty();

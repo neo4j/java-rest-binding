@@ -44,7 +44,7 @@ public class MatrixDataGraph {
         try {
             return getNeoNode().getId();
         } finally {
-            transaction.success();transaction.finish();
+            transaction.success();transaction.close();
         }
     }
 
@@ -151,7 +151,7 @@ public class MatrixDataGraph {
 	 	     
 	         tx.success();
 	     }  finally {
-	         tx.finish();
+	         tx.close();
 	        
 	     }
 	      return this;

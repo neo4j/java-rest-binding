@@ -64,7 +64,7 @@ public class BatchRestAPITest extends RestTestBase {
             assertEquals("node1", response.n1.getProperty("name"));
             assertEquals("node2", response.n2.getProperty("name"));
         } finally {
-            transaction.success();transaction.finish();
+            transaction.success();transaction.close();
         }
     }
 
@@ -86,7 +86,7 @@ public class BatchRestAPITest extends RestTestBase {
             assertEquals("node0", response.n1.getProperty("name"));
             assertEquals("node1000", response.n2.getProperty("name"));
         } finally {
-            transaction.success();transaction.finish();
+            transaction.success();transaction.close();
         }
     }
    
@@ -103,7 +103,7 @@ public class BatchRestAPITest extends RestTestBase {
         try {
             assertEquals(2, countExistingNodes());
         } finally {
-            transaction.success();transaction.finish();
+            transaction.success();transaction.close();
         }
     }
 
@@ -128,7 +128,7 @@ public class BatchRestAPITest extends RestTestBase {
             assertEquals(node1,relationship.getStartNode());
             assertEquals("node2", relationship.getEndNode().getProperty("name"));
         } finally {
-            transaction.success();transaction.finish();
+            transaction.success();transaction.close();
         }
     }
 
@@ -170,7 +170,7 @@ public class BatchRestAPITest extends RestTestBase {
         try {
             assertEquals(3, deleted.intValue());
         } finally {
-            transaction.success();transaction.finish();
+            transaction.success();transaction.close();
         }
     }
     @Test
@@ -193,7 +193,7 @@ public class BatchRestAPITest extends RestTestBase {
             assertEquals(node1, relationship.getStartNode());
             assertEquals(node2, relationship.getEndNode());
         } finally {
-            transaction.success();transaction.finish();
+            transaction.success();transaction.close();
         }
     }
 
@@ -220,7 +220,7 @@ public class BatchRestAPITest extends RestTestBase {
             assertEquals("true", loadRealNode(response.n1).getProperty("test"));
             assertEquals("stilltrue", loadRealNode(response.n1).getProperty("test2"));
         } finally {
-            transaction.success();transaction.finish();
+            transaction.success();transaction.close();
         }
     }
     
@@ -241,7 +241,7 @@ public class BatchRestAPITest extends RestTestBase {
         try {
             loadRealNode(response.n1);
         } finally {
-            transaction.success();transaction.finish();
+            transaction.success();transaction.close();
         }
     }
     
@@ -265,7 +265,7 @@ public class BatchRestAPITest extends RestTestBase {
             Relationship foundRelationship = TestHelper.firstRelationshipBetween( r.n1.getRelationships(Type.TEST, Direction.OUTGOING), r.n1, r.n2);
             Assert.assertNull("found relationship", foundRelationship);
         } finally {
-            transaction.success();transaction.finish();
+            transaction.success();transaction.close();
         }
     }
 
@@ -296,7 +296,7 @@ public class BatchRestAPITest extends RestTestBase {
             assertThat(r.n1.getRelationships(Type.TEST), new IsRelationshipToNodeMatcher(r.n1, r.n2));
             assertThat(r.allRelationships, new IsRelationshipToNodeMatcher(r.n1, r.n2));
         } finally {
-            transaction.success();transaction.finish();
+            transaction.success();transaction.close();
         }
     }
 
@@ -318,7 +318,7 @@ public class BatchRestAPITest extends RestTestBase {
                     final Node indexResult = getGraphDatabase().index().forNodes("heroes").get("indexname", "Neo2").getSingle();
                     assertNull(indexResult);
                 } finally {
-                    transaction.success();transaction.finish();
+                    transaction.success();transaction.close();
                 }
 
                 return index.query("indexname:Apoc");
@@ -335,7 +335,7 @@ public class BatchRestAPITest extends RestTestBase {
         assertEquals("Apoc indexed",apoc,heroes.iterator().next());
 
         } finally {
-            transaction.success();transaction.finish();
+            transaction.success();transaction.close();
         }
     }
     
@@ -355,7 +355,7 @@ public class BatchRestAPITest extends RestTestBase {
             assertEquals("1 hero", 1, heroes.size());
             assertEquals("Neo indexed", matrixDataGraph.getNeoNode(), heroes.iterator().next());
         } finally {
-            transaction.success();transaction.finish();
+            transaction.success();transaction.close();
         }
     }
     
@@ -376,7 +376,7 @@ public class BatchRestAPITest extends RestTestBase {
             IndexManager index = matrixDataGraph.getGraphDatabase().index();
             Assert.assertFalse(index.existsForNodes("heroes"));
         } finally {
-            transaction.success();transaction.finish();
+            transaction.success();transaction.close();
         }
     }
     

@@ -30,6 +30,7 @@ import org.neo4j.helpers.Predicate;
 import org.neo4j.kernel.Traversal;
 import org.neo4j.rest.graphdb.MatrixDataGraph.RelTypes;
 import org.neo4j.test.ImpermanentGraphDatabase;
+import org.neo4j.test.TestGraphDatabaseFactory;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -48,7 +49,7 @@ public class MatrixDatabaseTest {
 
     @BeforeClass
 	      public static void beforeClass() {
-                graphDb =  new ImpermanentGraphDatabase();
+                graphDb =  new TestGraphDatabaseFactory().newImpermanentDatabase();
                 mdg = new MatrixDataGraph(graphDb).createNodespace();
 	      }
 
@@ -66,7 +67,7 @@ public class MatrixDatabaseTest {
     @After
     public void tearDown() throws Exception {
         tx.success();
-        tx.finish();
+        tx.close();
     }
 
     @Test
@@ -166,7 +167,7 @@ public class MatrixDatabaseTest {
             * @return the Traverser
             */
            private static Traverser getFriends( final Node person ) {
-                    TraversalDescription td = Traversal.description()
+                    TraversalDescription td = graphDb.traversalDescription()
                             .breadthFirst()                            
                             .relationships( RelTypes.KNOWS, Direction.OUTGOING )
                             .evaluator( Evaluators.excludeStartPosition() );
@@ -178,7 +179,7 @@ public class MatrixDatabaseTest {
             * @return the Traverser
             */
            private static Traverser getHeroes() {
-                    TraversalDescription td = Traversal.description()
+                    TraversalDescription td =  graphDb.traversalDescription()
                             .breadthFirst()                            
                             .relationships( RelTypes.HERO, Direction.OUTGOING )
                             .evaluator( Evaluators.excludeStartPosition() );
@@ -191,7 +192,7 @@ public class MatrixDatabaseTest {
             * @return the Traverser
             */
            private Traverser getHeroesByNodeProperties() {
-         	  TraversalDescription td = Traversal.description()          		  	
+         	  TraversalDescription td =  graphDb.traversalDescription()
                        .breadthFirst()                        
                        .relationships( RelTypes.PERSONS_REFERENCE, Direction.OUTGOING )
                        .relationships( RelTypes.HEROES_REFERENCE, Direction.OUTGOING )
@@ -247,7 +248,7 @@ public class MatrixDatabaseTest {
             * @return the 'Traverser
             */
            private static Traverser findHackers( final Node startNode ) {
-                    TraversalDescription td = Traversal.description()
+                    TraversalDescription td =  graphDb.traversalDescription()
                             .breadthFirst()
                             .relationships( RelTypes.CODED_BY, Direction.OUTGOING )
                             .relationships( RelTypes.KNOWS, Direction.OUTGOING )
