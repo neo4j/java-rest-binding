@@ -37,6 +37,9 @@ public interface HelloWorldService {
     @POST
     @Path( "/{nodeId}" )
     public String post(@PathParam("nodeId") long nodeId, String body);
+    @POST
+    @Path( "/empty/{nodeId}" )
+    public void postWithoutResult(@PathParam("nodeId") long nodeId);
     @DELETE
     @Path( "/{nodeId}" )
     public String delete(@PathParam("nodeId") long nodeId);
