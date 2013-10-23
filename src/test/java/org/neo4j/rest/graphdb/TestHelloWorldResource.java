@@ -43,6 +43,7 @@ public class TestHelloWorldResource extends RestTestBase {
         assertEquals("get 0", hws.get(0));
         //assertEquals("put 0:post", hws.put(0, "put"));
         //assertEquals("post 0:post", hws.post(0, "post"));
+        hws.postWithoutResult(0);
         assertEquals("delete 0", hws.delete(0));
     }
 }
