@@ -80,7 +80,7 @@ public class RestTestBase {
     }
 
     @Before
-    public void setUp() throws URISyntaxException {
+    public void setUp() throws Exception {
         neoServer.cleanDb();
         restGraphDb = new RestGraphDatabase(SERVER_ROOT_URI);
     }

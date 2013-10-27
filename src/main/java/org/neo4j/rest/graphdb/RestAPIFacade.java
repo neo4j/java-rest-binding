@@ -24,6 +24,7 @@ import org.neo4j.graphdb.index.IndexHits;
 import org.neo4j.graphdb.traversal.TraversalDescription;
 import org.neo4j.rest.graphdb.batch.BatchCallback;
 import org.neo4j.rest.graphdb.batch.BatchRestAPI;
+import org.neo4j.rest.graphdb.batch.CypherResult;
 import org.neo4j.rest.graphdb.converter.RestEntityExtractor;
 import org.neo4j.rest.graphdb.entity.RestEntity;
 import org.neo4j.rest.graphdb.entity.RestNode;
@@ -189,7 +190,7 @@ public class RestAPIFacade implements RestAPI {
     }
 
     @Override
-    public Map<?, ?> query(String statement, Map<String, Object> params) {
+    public CypherResult query(String statement, Map<String, Object> params) {
         return current().query(statement, params);
     }
 

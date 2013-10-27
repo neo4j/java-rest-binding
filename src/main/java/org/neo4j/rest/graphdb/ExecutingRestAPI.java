@@ -27,6 +27,7 @@ import org.neo4j.helpers.collection.MapUtil;
 import org.neo4j.index.lucene.ValueContext;
 import org.neo4j.rest.graphdb.batch.BatchCallback;
 import org.neo4j.rest.graphdb.batch.BatchRestAPI;
+import org.neo4j.rest.graphdb.batch.CypherResult;
 import org.neo4j.rest.graphdb.converter.RelationshipIterableConverter;
 import org.neo4j.rest.graphdb.converter.RestEntityExtractor;
 import org.neo4j.rest.graphdb.converter.RestIndexHitsConverter;
@@ -538,10 +539,10 @@ public class ExecutingRestAPI implements RestAPI {
         return RestInvocationHandler.getInvocationProxy(type, facade, new ServiceInvocation(facade, type, baseUri));
      }
 
-    public Map<?, ?> query(String statement, Map<String, Object> params) {
+    public CypherResult query(String statement, Map<String, Object> params) {
         params =  (params==null) ? Collections.<String,Object>emptyMap() : params;
         final RequestResult requestResult = getRestRequest().post("cypher", MapUtil.map("query", statement, "params", params));
-        return getRestRequest().toMap(requestResult);
+        return new CypherResult(requestResult);
     }
 
     @Override
@@ -561,9 +562,9 @@ public class ExecutingRestAPI implements RestAPI {
     }
 
     public QueryResult<Map<String, Object>> query(String statement, Map<String, Object> params, ResultConverter resultConverter) {
-        final Map<?, ?> resultMap = query(statement, params);
-        if (RestResultException.isExceptionResult(resultMap)) throw new RestResultException(resultMap);
-        return new RestQueryResult(resultMap, facade, resultConverter);
+        final CypherResult result = query(statement, params);
+        if (RestResultException.isExceptionResult(result.asMap())) throw new RestResultException(result.asMap());
+        return new RestQueryResult(result, facade, resultConverter);
     }
 
     public QueryResult<Object> run(String statement, Map<String, Object> params, ResultConverter resultConverter) {

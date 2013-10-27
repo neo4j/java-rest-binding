@@ -140,7 +140,7 @@ public class RestAutoIndexTest extends RestTestBase {
     }
 
     @Before
-    public void setUp() throws URISyntaxException {
+    public void setUp() throws Exception {
         super.setUp();
         getGraphDatabase().index().getNodeAutoIndexer().setEnabled(false);
         getGraphDatabase().index().getRelationshipAutoIndexer().setEnabled(false);

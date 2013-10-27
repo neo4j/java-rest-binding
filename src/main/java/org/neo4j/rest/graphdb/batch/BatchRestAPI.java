@@ -20,10 +20,7 @@
 package org.neo4j.rest.graphdb.batch;
 
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 import org.neo4j.graphdb.PropertyContainer;
 import org.neo4j.graphdb.Relationship;
@@ -31,18 +28,16 @@ import org.neo4j.graphdb.index.IndexHits;
 import org.neo4j.helpers.collection.MapUtil;
 import org.neo4j.index.lucene.ValueContext;
 import org.neo4j.rest.graphdb.*;
-import org.neo4j.rest.graphdb.converter.RelationshipIterableConverter;
-import org.neo4j.rest.graphdb.converter.RestEntityExtractor;
-import org.neo4j.rest.graphdb.converter.RestEntityPropertyRefresher;
-import org.neo4j.rest.graphdb.converter.RestIndexHitsConverter;
+import org.neo4j.rest.graphdb.converter.*;
 import org.neo4j.rest.graphdb.entity.RestEntity;
 import org.neo4j.rest.graphdb.entity.RestNode;
 import org.neo4j.rest.graphdb.entity.RestRelationship;
 import org.neo4j.rest.graphdb.index.IndexInfo;
 import org.neo4j.rest.graphdb.index.RestIndex;
 import org.neo4j.rest.graphdb.index.SimpleIndexHits;
-import org.neo4j.rest.graphdb.services.RequestType;
-import org.neo4j.rest.graphdb.util.JsonHelper;
+import org.neo4j.rest.graphdb.query.RestQueryResult;
+import org.neo4j.rest.graphdb.util.QueryResult;
+import org.neo4j.rest.graphdb.util.ResultConverter;
 
 public class BatchRestAPI extends ExecutingRestAPI {
 
@@ -109,7 +104,34 @@ public class BatchRestAPI extends ExecutingRestAPI {
         final SimpleIndexHits<S> result = new SimpleIndexHits<S>(batchId, entityType, facade);
         getRecordingRequest().getOperations().addToRestOperation(batchId, result, new RestIndexHitsConverter(facade,entityType));
         return result;
-    }    
+    }
+
+    public CypherResult query(String statement, Map<String, Object> params) {
+        params =  (params==null) ? Collections.<String,Object>emptyMap() : params;
+        final RequestResult requestResult = getRecordingRequest().post("cypher", MapUtil.map("query", statement, "params", params));
+        CypherResult cypherResult = new CypherResult(requestResult.getBatchId());
+        getRecordingRequest().getOperations().addToRestOperation(requestResult.getBatchId(), cypherResult, new RestResultConverter() {
+            public Object convertFromRepresentation(RequestResult value) {
+                return new CypherResult(value);
+            }
+        });
+        return cypherResult;
+    }
+
+    public QueryResult<Map<String, Object>> query(String statement, Map<String, Object> params, ResultConverter resultConverter) {
+        final CypherResult result = query(statement, params);
+        RestQueryResult queryResult = new RestQueryResult(result, facade, resultConverter);
+        getRecordingRequest().getOperations().addToRestOperation(result.getBatchId(), queryResult, new RestResultConverter() {
+            public Object convertFromRepresentation(RequestResult result) {
+                if (RestResultException.isExceptionResult(result.toMap())) throw new RestResultException(result.toMap());
+                return new CypherResult(result);
+            }
+        });
+
+        return queryResult;
+    }
+
+
 
     @Override
     public void setPropertyOnEntity( RestEntity entity, String key, Object value ) {       

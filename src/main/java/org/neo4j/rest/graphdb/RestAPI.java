@@ -23,6 +23,7 @@ import org.neo4j.graphdb.*;
 import org.neo4j.graphdb.index.IndexHits;
 import org.neo4j.graphdb.traversal.TraversalDescription;
 import org.neo4j.rest.graphdb.batch.BatchCallback;
+import org.neo4j.rest.graphdb.batch.CypherResult;
 import org.neo4j.rest.graphdb.converter.RestEntityExtractor;
 import org.neo4j.rest.graphdb.entity.RestEntity;
 import org.neo4j.rest.graphdb.entity.RestNode;
@@ -101,7 +102,7 @@ public interface RestAPI {
 
     void removeProperty(RestEntity entity, String key);
 
-    Map<?, ?> query(String statement, Map<String, Object> params);
+    CypherResult query(String statement, Map<String, Object> params);
 
     Iterable<Relationship> getRelationships(RestNode restNode, String path);
 
