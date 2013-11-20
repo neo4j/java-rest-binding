@@ -227,7 +227,6 @@ the relevant Commercial Agreement.
             <url>http://m2.neo4j.org/content/repositories/snapshots</url>
         </snapshotRepository>
     </distributionManagement>
-
     <build>
         <plugins>
             <plugin>
