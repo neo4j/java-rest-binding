@@ -20,7 +20,6 @@
 package org.neo4j.rest.graphdb;
 
 import org.junit.Assert;
-import org.junit.Assume;
 import org.junit.Before;
 import org.junit.Test;
 import org.neo4j.graphdb.Node;

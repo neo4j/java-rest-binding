@@ -24,8 +24,6 @@ import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.assertNull;
 import static junit.framework.Assert.assertTrue;
-import static org.junit.Assert.assertNotNull;
-
 import java.util.*;
 
 import org.junit.Before;
@@ -39,7 +37,6 @@ import org.neo4j.rest.graphdb.converter.TypeInformation;
 import org.neo4j.rest.graphdb.entity.RestNode;
 import org.neo4j.rest.graphdb.entity.RestRelationship;
 import org.neo4j.rest.graphdb.traversal.SimplePath;
-import org.neo4j.rest.graphdb.util.QueryResult;
 
 /**
  * User: KBurchardi

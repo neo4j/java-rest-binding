@@ -26,7 +26,6 @@ import java.util.concurrent.atomic.AtomicLong;
 import javax.ws.rs.core.MediaType;
 
 
-import org.neo4j.rest.graphdb.ExecutingRestAPI;
 import org.neo4j.rest.graphdb.RequestResult;
 import org.neo4j.rest.graphdb.RestAPI;
 import org.neo4j.rest.graphdb.UpdatableRestResult;

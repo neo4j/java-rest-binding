@@ -24,7 +24,6 @@ import org.neo4j.graphdb.Relationship;
 import org.neo4j.graphdb.index.RelationshipIndex;
 
 import org.neo4j.rest.graphdb.RestAPI;
-import org.neo4j.rest.graphdb.RestRequest;
 
 /**
  * @author mh

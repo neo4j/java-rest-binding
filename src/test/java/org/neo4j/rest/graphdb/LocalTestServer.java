@@ -20,7 +20,6 @@
 package org.neo4j.rest.graphdb;
 
 import org.mortbay.component.LifeCycle;
-import org.mortbay.jetty.Server;
 import org.neo4j.graphdb.GraphDatabaseService;
 import org.neo4j.server.CommunityNeoServer;
 import org.neo4j.server.configuration.PropertyFileConfigurator;

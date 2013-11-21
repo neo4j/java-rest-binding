@@ -19,19 +19,11 @@
  */
 package org.neo4j.rest.graphdb.query;
 
-import java.util.Collections;
-import java.util.Iterator;
 import java.util.Map;
 
-import org.neo4j.helpers.collection.IterableWrapper;
 import org.neo4j.rest.graphdb.*;
-import org.neo4j.rest.graphdb.converter.RestEntityExtractor;
-import org.neo4j.rest.graphdb.converter.RestTableResultExtractor;
-import org.neo4j.rest.graphdb.util.ConvertedResult;
 import org.neo4j.rest.graphdb.util.DefaultConverter;
-import org.neo4j.rest.graphdb.util.Handler;
 import org.neo4j.rest.graphdb.util.QueryResult;
-import org.neo4j.rest.graphdb.util.QueryResultBuilder;
 import org.neo4j.rest.graphdb.util.ResultConverter;
 
 /**

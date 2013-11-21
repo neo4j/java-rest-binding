@@ -20,8 +20,6 @@
 package org.neo4j.rest.graphdb.index;
 
 import org.neo4j.graphdb.Relationship;
-import org.neo4j.graphdb.index.IndexManager;
-import org.neo4j.graphdb.index.ReadableIndex;
 import org.neo4j.graphdb.index.ReadableRelationshipIndex;
 import org.neo4j.graphdb.index.RelationshipAutoIndexer;
 import org.neo4j.rest.graphdb.RestAPI;

@@ -25,7 +25,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.neo4j.rest.graphdb.RequestResult;
-import org.neo4j.rest.graphdb.util.JsonHelper;
 
 public class RestTableResultExtractor implements RestResultConverter{
 

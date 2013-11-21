@@ -19,7 +19,6 @@
  */
 package org.neo4j.rest.graphdb;
 
-import org.junit.Assume;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;

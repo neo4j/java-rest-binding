@@ -27,14 +27,12 @@ package org.neo4j.rest.graphdb.util;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringWriter;
-import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
 
 import org.codehaus.jackson.JsonGenerator;
 import org.codehaus.jackson.map.ObjectMapper;
-import org.neo4j.rest.graphdb.PropertiesMap;
 
 public class JsonHelper {
 

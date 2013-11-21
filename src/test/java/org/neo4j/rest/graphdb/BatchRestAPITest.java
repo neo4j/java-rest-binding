@@ -20,11 +20,9 @@
 package org.neo4j.rest.graphdb;
 
 import static org.junit.Assert.*;
-import static org.junit.Assert.assertEquals;
 import static org.neo4j.helpers.collection.MapUtil.map;
 
 import org.junit.Assert;
-import org.junit.Assume;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -42,11 +40,7 @@ import org.neo4j.rest.graphdb.entity.RestNode;
 import org.neo4j.rest.graphdb.entity.RestRelationship;
 import org.neo4j.rest.graphdb.index.RestIndex;
 import org.neo4j.rest.graphdb.query.RestCypherQueryEngine;
-import org.neo4j.rest.graphdb.util.QueryResult;
 import org.neo4j.rest.graphdb.util.TestHelper;
-
-import java.util.List;
-import java.util.Map;
 
 public class BatchRestAPITest extends RestTestBase {
     public static final DynamicRelationshipType RELATIONSHIP_TYPE = DynamicRelationshipType.withName("foo");

@@ -23,7 +23,6 @@ import org.neo4j.graphdb.Lock;
 import org.neo4j.graphdb.PropertyContainer;
 import org.neo4j.graphdb.Transaction;
 import org.neo4j.rest.graphdb.batch.BatchRestAPI;
-import org.neo4j.rest.graphdb.batch.RestOperations;
 
 /**
 * @author mh

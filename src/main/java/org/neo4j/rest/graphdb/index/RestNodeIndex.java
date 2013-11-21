@@ -22,7 +22,6 @@ package org.neo4j.rest.graphdb.index;
 import org.neo4j.graphdb.Node;
 
 import org.neo4j.rest.graphdb.RestAPI;
-import org.neo4j.rest.graphdb.RestRequest;
 
 /**
  * @author mh

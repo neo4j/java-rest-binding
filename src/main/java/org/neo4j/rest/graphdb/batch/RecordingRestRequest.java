@@ -30,7 +30,6 @@ import org.neo4j.rest.graphdb.RequestResult;
 import org.neo4j.rest.graphdb.RestRequest;
 import org.neo4j.rest.graphdb.batch.RestOperations.RestOperation;
 import org.neo4j.rest.graphdb.batch.RestOperations.RestOperation.Methods;
-import org.neo4j.rest.graphdb.util.JsonHelper;
 
 
 

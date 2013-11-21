@@ -25,7 +25,6 @@ import java.util.Iterator;
 import org.neo4j.graphdb.PropertyContainer;
 import org.neo4j.graphdb.index.IndexHits;
 
-import org.neo4j.rest.graphdb.ExecutingRestAPI;
 import org.neo4j.rest.graphdb.RestAPI;
 import org.neo4j.rest.graphdb.UpdatableRestResult;
 import org.neo4j.rest.graphdb.converter.RestEntityExtractor;

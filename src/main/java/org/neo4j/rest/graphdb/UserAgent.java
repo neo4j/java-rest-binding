@@ -19,7 +19,6 @@
  */
 package org.neo4j.rest.graphdb;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
 import com.sun.jersey.api.client.Client;

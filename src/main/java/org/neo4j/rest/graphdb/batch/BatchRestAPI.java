@@ -41,8 +41,6 @@ import org.neo4j.rest.graphdb.entity.RestRelationship;
 import org.neo4j.rest.graphdb.index.IndexInfo;
 import org.neo4j.rest.graphdb.index.RestIndex;
 import org.neo4j.rest.graphdb.index.SimpleIndexHits;
-import org.neo4j.rest.graphdb.services.RequestType;
-import org.neo4j.rest.graphdb.util.JsonHelper;
 
 public class BatchRestAPI extends ExecutingRestAPI {
 
