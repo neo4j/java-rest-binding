@@ -28,16 +28,13 @@ public class EmptyGraphTest extends RestTestBase {
 
     @Test(expected = NotFoundException.class)
     public void testGetReferenceNodeOnEmptyDbFails() {
-        Transaction tx = getGraphDatabase().beginTx();
-        getGraphDatabase().getReferenceNode().delete();
-        tx.success();tx.close();
-        getRestGraphDb().getReferenceNode();
-    }
-
-    @Override
-    @After
-    public void tearDown() throws Exception {
-        super.tearDown();
-        initServer();
+        try (Transaction tx = getGraphDatabase().beginTx()) {
+            node().delete();
+            tx.success();
+        }
+        try (Transaction tx = getGraphDatabase().beginTx()) {
+            getGraphDatabase().getNodeById(node().getId());
+            tx.success();
+        }
     }
 }

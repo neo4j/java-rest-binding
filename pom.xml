@@ -9,7 +9,7 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <slf4j.version>1.6.1</slf4j.version>
-        <neo4j.version>2.0.0-M06</neo4j.version>
+        <neo4j.version>2.0.0</neo4j.version>
         <jersey.version>1.9</jersey.version>
         <license-text.header>GPL-3-header.txt</license-text.header>
     </properties>
@@ -227,4 +227,18 @@ the relevant Commercial Agreement.
             <url>http://m2.neo4j.org/content/repositories/snapshots</url>
         </snapshotRepository>
     </distributionManagement>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.1</version>
+                <configuration>
+                    <source>1.7</source>
+                    <target>1.7</target>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
 </project>

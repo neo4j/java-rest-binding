@@ -23,8 +23,9 @@ import org.eclipse.jetty.util.component.LifeCycle;
 import org.neo4j.graphdb.GraphDatabaseService;
 import org.neo4j.server.CommunityNeoServer;
 import org.neo4j.server.configuration.PropertyFileConfigurator;
+import org.neo4j.server.database.CommunityDatabase;
 import org.neo4j.server.database.Database;
-import org.neo4j.server.database.WrappingDatabase;
+import org.neo4j.server.database.WrappedDatabase;
 import org.neo4j.server.modules.RESTApiModule;
 import org.neo4j.server.modules.ServerModule;
 import org.neo4j.server.modules.ThirdPartyJAXRSModule;
@@ -115,7 +116,7 @@ public class LocalTestServer {
 
             @Override
             protected Database createDatabase() {
-                return new WrappingDatabase(graphDatabase);
+                return new WrappedDatabase(graphDatabase);
             }
 
             @Override
@@ -176,7 +177,7 @@ public class LocalTestServer {
     }
 
     public GraphDatabaseService getGraphDatabase() {
-        return getDatabase().graph;
+        return getDatabase().getGraph();
     }
 
     public String getUserAgent() {

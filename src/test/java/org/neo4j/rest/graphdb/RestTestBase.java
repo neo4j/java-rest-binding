@@ -24,11 +24,10 @@ import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
-import org.neo4j.graphdb.Direction;
-import org.neo4j.graphdb.GraphDatabaseService;
-import org.neo4j.graphdb.Node;
-import org.neo4j.graphdb.Relationship;
+import org.neo4j.graphdb.*;
 import org.neo4j.helpers.collection.IteratorUtil;
+import org.neo4j.rest.graphdb.entity.RestNode;
+import org.neo4j.rest.graphdb.util.Config;
 import org.neo4j.tooling.GlobalGraphOperations;
 
 import java.net.URISyntaxException;
@@ -46,6 +45,8 @@ public class RestTestBase {
     protected static final String SERVER_ROOT_URI = SERVER_ROOT + "/db/data/";
     private static final String SERVER_CLEANDB_URI = SERVER_ROOT + "/cleandb/secret-key";
     private static final String CONFIG = RestTestBase.class.getResource("/neo4j-server.properties").getFile();
+    private long referenceNodeId;
+    private Node referenceNode;
 
     static {
         initServer();
@@ -81,8 +82,18 @@ public class RestTestBase {
 
     @Before
     public void setUp() throws Exception {
+        System.setProperty(Config.CONFIG_BATCH_TRANSACTION,"false");
         neoServer.cleanDb();
         restGraphDb = new RestGraphDatabase(SERVER_ROOT_URI);
+
+        GraphDatabaseService db = getGraphDatabase();
+        try (Transaction tx = db.beginTx()) {
+            Node node = db.createNode();
+            this.referenceNodeId = node.getId();
+            tx.success();
+        }
+        this.referenceNode = restGraphDb.getNodeById(referenceNodeId);
+
     }
 
     @After
@@ -103,9 +114,12 @@ public class RestTestBase {
     }
 
     protected Node node() {
-        return restGraphDb.getReferenceNode();
+        return referenceNode;
     }
-    
+    protected long nodeId() {
+        return referenceNodeId;
+    }
+
     protected GraphDatabaseService getGraphDatabase() {
     	return neoServer.getGraphDatabase();
     }

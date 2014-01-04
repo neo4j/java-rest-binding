@@ -44,8 +44,8 @@ public class RestCypherQueryEngineTest extends RestTestBase {
     
     @Before
     public void init() throws Exception {
-        embeddedMatrixdata = new MatrixDataGraph(getGraphDatabase()).createNodespace();
-        restMatrixData = new MatrixDataGraph(getRestGraphDb());
+        embeddedMatrixdata = new MatrixDataGraph(getGraphDatabase(),nodeId()).createNodespace();
+        restMatrixData = new MatrixDataGraph(getRestGraphDb(),nodeId());
         this.restAPI = ((RestGraphDatabase)getRestGraphDb()).getRestAPI();
         queryEngine = new RestCypherQueryEngine(restAPI);      
     }
@@ -53,10 +53,10 @@ public class RestCypherQueryEngineTest extends RestTestBase {
     @Test
     public void testGetReferenceNode(){
         final String queryString = "start n=node({reference}) return n";
-        final Node result = (Node) queryEngine.query(queryString, MapUtil.map("reference",0)).to(Node.class).single();
+        final Node result = (Node) queryEngine.query(queryString, MapUtil.map("reference",node().getId())).to(Node.class).single();
         Transaction tx = getGraphDatabase().beginTx();
         try {
-            assertEquals(embeddedMatrixdata.getGraphDatabase().getReferenceNode(), result);
+            assertEquals(embeddedMatrixdata.getReferenceNode(), result);
         } finally {
             tx.success();tx.close();
         }
@@ -143,7 +143,7 @@ public class RestCypherQueryEngineTest extends RestTestBase {
     @Test
     public void testGetRelationshipType(){
         final String queryString ="start n=node({reference}) match (n)-[r]->() return type(r)";
-        final Collection<String> result =  IteratorUtil.asCollection(queryEngine.query(queryString, MapUtil.map("reference",0)).to(String.class)); 
+        final Collection<String> result =  IteratorUtil.asCollection(queryEngine.query(queryString, MapUtil.map("reference",node().getId())).to(String.class));
         assertTrue(result.contains("NEO_NODE"));      
     }
     

@@ -25,6 +25,7 @@ import org.neo4j.graphdb.schema.Schema;
 import org.neo4j.graphdb.traversal.BidirectionalTraversalDescription;
 import org.neo4j.graphdb.traversal.TraversalDescription;
 import org.neo4j.kernel.impl.core.RelationshipTypeTokenHolder;
+import org.neo4j.kernel.impl.nioneo.store.StoreId;
 import org.neo4j.rest.graphdb.entity.RestNode;
 import org.neo4j.rest.graphdb.index.RestIndexManager;
 import org.neo4j.rest.graphdb.query.RestCypherQueryEngine;
@@ -99,13 +100,28 @@ public class RestGraphDatabase extends AbstractRemoteDatabase {
     }
 
     @Override
+    public StoreId storeId() {
+        return null;
+    }
+
+    @Override
+    public boolean isAvailable(long timeout) {
+        return restAPI!=null;
+    }
+
     public TransactionManager getTxManager() {
         return new BatchTransactionManager(restAPI); //new NullTransactionManager();
     }
 
     @Override
-    public RelationshipTypeTokenHolder getRelationshipTypeTokenHolder() {
-        return null;
+    public DependencyResolver getDependencyResolver() {
+        return new DependencyResolver.Adapter() {
+            @Override
+            public <T> T resolveDependency(Class<T> type, SelectionStrategy selector) throws IllegalArgumentException {
+                if (TransactionManager.class.isAssignableFrom(type)) return (T)getTxManager();
+                return null;
+            }
+        };
     }
 
     @Override

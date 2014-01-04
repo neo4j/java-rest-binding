@@ -47,7 +47,7 @@ public class RestAPITest extends RestTestBase {
     @Before
 	public void init(){
 		this.restAPI = ((RestGraphDatabase)getRestGraphDb()).getRestAPI();
-	}
+    }
 
     @Test
     public void testUserAgent() throws Exception {
@@ -73,16 +73,16 @@ public class RestAPITest extends RestTestBase {
 
     @Test
     public void testGetSingleRelationshipShouldReturnNullIfThereIsNone() throws Exception {
-        assertNull(getRestGraphDb().getReferenceNode().getSingleRelationship(DynamicRelationshipType.withName("foo"),Direction.OUTGOING));
+        assertNull(node().getSingleRelationship(DynamicRelationshipType.withName("foo"),Direction.OUTGOING));
     }
     @Test
     public void testHasSingleRelationshipShouldReturnFalseIfThereIsNone() throws Exception {
-        assertEquals(false,getRestGraphDb().getReferenceNode().hasRelationship(DynamicRelationshipType.withName("foo"),Direction.OUTGOING));
+        assertEquals(false,node().hasRelationship(DynamicRelationshipType.withName("foo"),Direction.OUTGOING));
     }
 
 	@Test
     public void testCreateRelationshipWithParams() {
-        Node refNode = getRestGraphDb().getReferenceNode();
+        Node refNode = node();
         Node node = getRestGraphDb().createNode();
         Map<String, Object> props = new HashMap<String, Object>();
 		props.put("name", "test");
@@ -184,7 +184,7 @@ public class RestAPITest extends RestTestBase {
 	
 	@Test
 	public void testCreateRestAPIIndexForRelationship(){
-		Node refNode = getRestGraphDb().getReferenceNode();
+		Node refNode = node();
 	    Node node = getRestGraphDb().createNode();
 	    Map<String, Object> props = new HashMap<String, Object>();
 		props.put("name", "test");
