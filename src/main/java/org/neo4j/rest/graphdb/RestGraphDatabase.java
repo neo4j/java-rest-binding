@@ -23,8 +23,6 @@ package org.neo4j.rest.graphdb;
 import org.neo4j.graphdb.*;
 import org.neo4j.graphdb.schema.Schema;
 import org.neo4j.graphdb.traversal.BidirectionalTraversalDescription;
-import org.neo4j.graphdb.traversal.TraversalDescription;
-import org.neo4j.kernel.impl.core.RelationshipTypeTokenHolder;
 import org.neo4j.kernel.impl.nioneo.store.StoreId;
 import org.neo4j.rest.graphdb.entity.RestNode;
 import org.neo4j.rest.graphdb.index.RestIndexManager;
@@ -35,6 +33,7 @@ import org.neo4j.rest.graphdb.util.ResourceIterableWrapper;
 import org.neo4j.rest.graphdb.util.ResultConverter;
 
 import javax.transaction.TransactionManager;
+import java.util.Collection;
 import java.util.Map;
 
 
@@ -72,7 +71,7 @@ public class RestGraphDatabase extends AbstractRemoteDatabase {
     	return this.restAPI.getNodeById(id);
     }
 
-    public Node getReferenceNode() {
+    public Node getReferenceNode(boolean create) {
         return this.restAPI.getReferenceNode();
     }
 
@@ -166,6 +165,10 @@ public class RestGraphDatabase extends AbstractRemoteDatabase {
     @Override
     public BidirectionalTraversalDescription bidirectionalTraversalDescription() {
         throw new UnsupportedOperationException();
+    }
+
+    public Collection<String> getAllLabelNames() {
+        return restAPI.getAllLabelNames();
     }
 }
 

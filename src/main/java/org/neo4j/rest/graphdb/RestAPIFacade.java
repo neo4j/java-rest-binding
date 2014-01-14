@@ -325,8 +325,13 @@ public class RestAPIFacade implements RestAPI {
     }
 
     @Override
-    public Collection<String> getLabels(String path) {
-        return current().getLabels(path);
+    public Collection<String> getNodeLabels(String path) {
+        return current().getNodeLabels(path);
+    }
+
+    @Override
+    public Collection<String> getAllLabelNames() {
+        return current().getAllLabelNames();
     }
 
     @Override

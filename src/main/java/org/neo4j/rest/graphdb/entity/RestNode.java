@@ -162,7 +162,7 @@ public class RestNode extends RestEntity implements Node {
 
     private void updateLabels() {
         if (hasToUpdateLabels()) {
-            Collection<String> labels=restApi.getLabels(labelsPath());
+            Collection<String> labels=restApi.getNodeLabels(labelsPath());
             this.labels.clear();
             this.labels.addAll(labels);
             this.lastLabelFetchTime = System.currentTimeMillis();

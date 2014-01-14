@@ -148,7 +148,9 @@ public interface RestAPI {
 
     void removeLabel(String path, String label);
 
-    Collection<String> getLabels(String path);
+    Collection<String> getNodeLabels(String path);
+
+    Collection<String> getAllLabelNames();
 
     void addLabels(String path, String... labels);
 

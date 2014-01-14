@@ -252,8 +252,17 @@ public class ExecutingRestAPI implements RestAPI {
     }
 
     @Override
-    public Collection<String> getLabels(String path) {
+    public Collection<String> getNodeLabels(String path) {
         RequestResult response = restRequest.get(path);
+        if (response.statusOtherThan(Status.OK)) {
+            throw new IllegalStateException("received " + response);
+        }
+        return (Collection<String>) response.toEntity();
+    }
+
+    @Override
+    public Collection<String> getAllLabelNames() {
+        RequestResult response = restRequest.get("labels");
         if (response.statusOtherThan(Status.OK)) {
             throw new IllegalStateException("received " + response);
         }

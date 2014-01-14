@@ -19,10 +19,10 @@
  */
 package org.neo4j.rest.graphdb;
 
-import static java.util.Arrays.asList;
 import static org.junit.Assert.*;
 import static org.neo4j.helpers.collection.MapUtil.map;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -352,5 +352,12 @@ public class RestAPITest extends RestTestBase {
             count++;
         }
         assertEquals("one node with label",1,count);
+    }
+
+    @Test
+    public void testGetAllLabelNames() throws Exception {
+        RestNode node = restAPI.createNode(map("name","foo bar"));
+        node.addLabel(LABEL_FOO);
+        assertEquals(Collections.singletonList(LABEL_FOO.name()),restAPI.getAllLabelNames());
     }
 }
