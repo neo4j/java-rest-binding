@@ -58,10 +58,15 @@ public class RestInvocationHandler implements InvocationHandler{
         }
         final RequestResult requestResult = invocationStrategy.invoke(method,args);
         final int status = requestResult.getStatus();
-        if (status!=200) throw new RuntimeException(requestResult.getText());
-        Object obj = requestResult.toEntity();
-        TypeInformation typeInfo = new TypeInformation( method.getGenericReturnType());
-        return this.resultTypeConverter.convertToResultType(obj, typeInfo);
+        if (status==200) {
+            //success with content in result
+            Object obj = requestResult.toEntity();
+            TypeInformation typeInfo = new TypeInformation( method.getGenericReturnType());
+            return this.resultTypeConverter.convertToResultType(obj, typeInfo);
+        } else if (status==204) {
+            //success without content in result
+            return null;
+        } else throw new RuntimeException(requestResult.getText());
 
     }
 

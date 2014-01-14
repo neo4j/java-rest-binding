@@ -45,6 +45,12 @@ public class HelloWorldResource {
     public Response post(@PathParam("nodeId") long nodeId, String body) {
         return Response.status(Status.OK).entity(("\"post " + nodeId +":"+body + "\"").getBytes()).build();
     }
+    @POST
+    @Path("/empty/{nodeId}")
+    @Consumes(MediaType.APPLICATION_JSON)
+    public Response postWithoutResult(@PathParam("nodeId") long nodeId) {
+        return Response.status(Status.NO_CONTENT).build();
+    }
     @DELETE
     @Path("/{nodeId}")
     @Consumes(MediaType.APPLICATION_JSON)
