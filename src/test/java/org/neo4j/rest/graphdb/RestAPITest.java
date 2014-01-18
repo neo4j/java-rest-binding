@@ -19,9 +19,13 @@
  */
 package org.neo4j.rest.graphdb;
 
+import static java.util.Arrays.asList;
+import static org.hamcrest.CoreMatchers.hasItems;
 import static org.junit.Assert.*;
+import static org.neo4j.graphdb.DynamicLabel.label;
 import static org.neo4j.helpers.collection.MapUtil.map;
 
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -32,6 +36,8 @@ import org.junit.Test;
 import org.neo4j.graphdb.*;
 import org.neo4j.graphdb.index.Index;
 import org.neo4j.graphdb.index.IndexManager;
+import org.neo4j.helpers.collection.IterableWrapper;
+import org.neo4j.helpers.collection.IteratorUtil;
 import org.neo4j.index.impl.lucene.LuceneIndexImplementation;
 import org.neo4j.rest.graphdb.entity.RestNode;
 import org.neo4j.rest.graphdb.entity.RestRelationship;
@@ -43,6 +49,7 @@ public class RestAPITest extends RestTestBase {
 
     private RestAPI restAPI;
     public static final Label LABEL_FOO = DynamicLabel.label("FOO");
+    public static final Label LABEL_BAR = DynamicLabel.label("BAR");
 
     @Before
 	public void init(){
@@ -343,6 +350,34 @@ public class RestAPITest extends RestTestBase {
     }
 
     @Test
+    public void testSetNodeLabel() throws Exception {
+        RestNode n1 = restAPI.createNode(map("name", "node1"));
+        n1.addLabel(LABEL_FOO);
+        n1.addLabel(LABEL_BAR);
+        Collection<String> labels = IteratorUtil.asCollection(new IterableWrapper<String, Label>(n1.getLabels()) {
+            protected String underlyingObjectToObject(Label label) {
+                return label.name();
+            }
+        });
+        assertThat(labels, hasItems(LABEL_FOO.name(), LABEL_BAR.name()));
+    }
+
+    @Test
+    public void testRemoveNodeLabel2() throws Exception {
+        RestNode n1 = restAPI.createNode(map("name", "node1"));
+        n1.addLabel(LABEL_FOO);
+        n1.addLabel(LABEL_BAR);
+
+        n1.removeLabel(LABEL_BAR);
+        Collection<String> labels = IteratorUtil.asCollection(new IterableWrapper<String, Label>(n1.getLabels()) {
+            protected String underlyingObjectToObject(Label label) {
+                return label.name();
+            }
+        });
+        assertThat(labels, hasItems(LABEL_FOO.name()));
+    }
+
+    @Test
     public void testGetNodeByLabelAndProperty() throws Exception {
         RestNode node = restAPI.createNode(map("name","foo bar"));
         node.addLabel(LABEL_FOO);
@@ -358,6 +393,6 @@ public class RestAPITest extends RestTestBase {
     public void testGetAllLabelNames() throws Exception {
         RestNode node = restAPI.createNode(map("name","foo bar"));
         node.addLabel(LABEL_FOO);
-        assertEquals(Collections.singletonList(LABEL_FOO.name()),restAPI.getAllLabelNames());
+        assertEquals(asList(LABEL_FOO.name(),LABEL_BAR.name()),restAPI.getAllLabelNames());
     }
 }

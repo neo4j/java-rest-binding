@@ -235,17 +235,10 @@ public class ExecutingRestAPI implements RestAPI {
         }
     }
 
-    @Override
-    public void addLabel(String path, String label) {
-        RequestResult response = restRequest.post(path, label);
-        if (response.statusOtherThan(Status.NO_CONTENT)) {
-            throw new IllegalStateException("received " + response);
-        }
-    }
 
     @Override
-    public void removeLabel(String path, String label) {
-        RequestResult response = restRequest.delete(path + "/" + label);
+    public void removeLabel(RestNode node, String label) {
+        RequestResult response = getRestRequest().with(node.getUri()).delete("labels/" + label);
         if (response.statusOtherThan(Status.NO_CONTENT)) {
             throw new IllegalStateException("received " + response);
         }
@@ -303,8 +296,9 @@ public class ExecutingRestAPI implements RestAPI {
     }
 
     @Override
-    public void addLabels(String path, String... labels) {
-        RequestResult response = restRequest.post(path, asList(labels));
+    public void addLabels(RestNode node, String...labels) {
+        RequestResult response = getRestRequest().with(node.getUri()).post("labels", asList(labels));
+
         if (response.statusOtherThan(Status.NO_CONTENT)) {
             throw new IllegalStateException("error adding labels, received " + response);
         }

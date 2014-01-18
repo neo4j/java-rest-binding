@@ -138,7 +138,7 @@ public class RestGraphDatabase extends AbstractRemoteDatabase {
         RestNode node = restAPI.createNode(null);
         String[] labelNames = new String[labels.length];
         for (int i = 0; i < labels.length; i++) labelNames[i]=labels[i].name();
-        restAPI.addLabels(node.labelsPath(),labelNames);
+        restAPI.addLabels(node,labelNames);
         return node;
     }
 

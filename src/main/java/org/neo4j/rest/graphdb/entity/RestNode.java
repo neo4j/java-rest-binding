@@ -144,13 +144,13 @@ public class RestNode extends RestEntity implements Node {
 
     @Override
     public void addLabel(Label label) {
-        restApi.addLabel(labelsPath(),label.name());
+        restApi.addLabels(this, label.name());
         this.labels.add(label.name());
     }
 
     @Override
     public void removeLabel(Label label) {
-        restApi.removeLabel(labelsPath(),label.name());
+        restApi.removeLabel(this,label.name());
         this.labels.remove(label.name());
     }
 

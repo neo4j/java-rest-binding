@@ -27,6 +27,9 @@ import org.neo4j.graphdb.*;
 import org.neo4j.graphdb.index.Index;
 import org.neo4j.graphdb.index.IndexHits;
 import org.neo4j.graphdb.index.IndexManager;
+import org.neo4j.helpers.collection.IterableWrapper;
+import org.neo4j.helpers.collection.IteratorUtil;
+import org.neo4j.helpers.collection.IteratorWrapper;
 import org.neo4j.helpers.collection.MapUtil;
 import org.neo4j.index.impl.lucene.LuceneIndexImplementation;
 import org.neo4j.rest.graphdb.entity.RestNode;
@@ -36,7 +39,13 @@ import org.neo4j.rest.graphdb.transaction.NullTransaction;
 import org.neo4j.rest.graphdb.util.Config;
 import org.neo4j.rest.graphdb.util.TestHelper;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+
+import static org.hamcrest.CoreMatchers.hasItems;
 import static org.junit.Assert.*;
+import static org.neo4j.graphdb.DynamicLabel.label;
 import static org.neo4j.helpers.collection.MapUtil.map;
 
 public class BatchRestAPITransactionTest extends RestTestBase {
@@ -151,6 +160,50 @@ public class BatchRestAPITransactionTest extends RestTestBase {
         try {
             Node node = index.get("key", "value").getSingle();
             assertEquals("created node found in index", n1, node);
+        } finally {
+            transaction.success();transaction.close();
+        }
+    }
+
+    @Test
+    public void testSetNodeLabel() throws Exception {
+        final Transaction tx = restAPI.beginTx();
+
+        RestNode n1 = restAPI.createNode(map("name", "node1"));
+        n1.addLabel(label("FOO"));
+        n1.addLabel(label("BAR"));
+        tx.success();
+        tx.close();
+        Transaction transaction = getGraphDatabase().beginTx();
+        try {
+            Collection<String> labels = IteratorUtil.asCollection(new IterableWrapper<String, Label>(n1.getLabels()) {
+                protected String underlyingObjectToObject(Label label) {
+                    return label.name();
+                }
+            });
+            assertThat(labels, hasItems("FOO", "BAR"));
+        } finally {
+            transaction.success();transaction.close();
+        }
+    }
+    @Test
+    public void testRemoveNodeLabel() throws Exception {
+        RestNode n1 = restAPI.createNode(map("name", "node1"));
+        n1.addLabel(label("FOO"));
+        n1.addLabel(label("BAR"));
+
+        final Transaction tx = restAPI.beginTx();
+        n1.removeLabel(label("BAR"));
+        tx.success();
+        tx.close();
+        Transaction transaction = getGraphDatabase().beginTx();
+        try {
+            Collection<String> labels = IteratorUtil.asCollection(new IterableWrapper<String, Label>(n1.getLabels()) {
+                protected String underlyingObjectToObject(Label label) {
+                    return label.name();
+                }
+            });
+            assertThat(labels, hasItems("FOO"));
         } finally {
             transaction.success();transaction.close();
         }

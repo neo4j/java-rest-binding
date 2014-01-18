@@ -144,15 +144,13 @@ public interface RestAPI {
 
     void stopAutoIndexingProperty(Class forClass, String s);
 
-    void addLabel(String path, String label);
+    void addLabels(RestNode node, String...label);
 
-    void removeLabel(String path, String label);
+    void removeLabel(RestNode node, String label);
 
     Collection<String> getNodeLabels(String path);
 
     Collection<String> getAllLabelNames();
-
-    void addLabels(String path, String... labels);
 
     Iterable<RestNode> getNodesByLabel(String label);
 

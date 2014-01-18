@@ -315,13 +315,13 @@ public class RestAPIFacade implements RestAPI {
     }
 
     @Override
-    public void addLabel(String path, String label) {
-        current().addLabel(path,label);
+    public void addLabels(RestNode node, String...labels) {
+        current().addLabels(node, labels);
     }
 
     @Override
-    public void removeLabel(String path, String label) {
-        current().removeLabel(path,label);
+    public void removeLabel(RestNode node, String label) {
+        current().removeLabel(node,label);
     }
 
     @Override
@@ -332,11 +332,6 @@ public class RestAPIFacade implements RestAPI {
     @Override
     public Collection<String> getAllLabelNames() {
         return current().getAllLabelNames();
-    }
-
-    @Override
-    public void addLabels(String path, String... labels) {
-        current().addLabels(path,labels);
     }
 
     @Override

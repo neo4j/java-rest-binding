@@ -39,6 +39,10 @@ import org.neo4j.rest.graphdb.query.RestQueryResult;
 import org.neo4j.rest.graphdb.util.QueryResult;
 import org.neo4j.rest.graphdb.util.ResultConverter;
 
+import javax.ws.rs.core.Response;
+
+import static java.util.Arrays.asList;
+
 public class BatchRestAPI extends ExecutingRestAPI {
 
     private final ExecutingRestAPI executingRestApi;
@@ -139,7 +143,22 @@ public class BatchRestAPI extends ExecutingRestAPI {
         final long batchId = response.getBatchId();     
         getRecordingRequest().getOperations().addToRestOperation(batchId, entity, new RestEntityPropertyRefresher(entity));       
     }
-    
+
+    @Override
+    public void removeLabel(RestNode node, String label) {
+        RequestResult response = getRestRequest().with(node.getUri()).delete("labels/" + label);
+        final long batchId = response.getBatchId();
+        getRecordingRequest().getOperations().addToRestOperation(batchId, node, new RestEntityPropertyRefresher(node));
+    }
+
+    @Override
+    public void addLabels(RestNode node, String...labels) {
+        RequestResult response = getRestRequest().with(node.getUri()).post("labels", asList(labels));
+        final long batchId = response.getBatchId();
+        getRecordingRequest().getOperations().addToRestOperation(batchId, node, new RestEntityPropertyRefresher(node));
+    }
+
+
     @Override
     public <T extends PropertyContainer> void addToIndex( T entity, RestIndex index,  String key, Object value ) {
         final RestEntity restEntity = (RestEntity) entity;
