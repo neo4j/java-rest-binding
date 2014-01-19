@@ -37,8 +37,15 @@ Build it locally. Then use the maven / ivy dependency or copy the jar into your 
     <dependency>
 		<groupId>org.neo4j</groupId>
 		<artifactId>neo4j-rest-graphdb</artifactId>
-		<version>1.8.M07</version>
+		<version>2.0.0</version>
     </dependency>
+    
+    and in the repositories section add:
+    
+    <repository>
+       <id>neo4j-contrib-releases</id>
+       <url>https://raw.github.com/neo4j-contrib/m2/master/releases</url>
+    </repository>
 
     GraphDatabaseService gds = new RestGraphDatabase("http://localhost:7474/db/data");
     GraphDatabaseService gds = new RestGraphDatabase("http://localhost:7474/db/data",username,password);
