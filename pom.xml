@@ -9,7 +9,7 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <slf4j.version>1.6.1</slf4j.version>
-        <neo4j.version>2.0.0</neo4j.version>
+        <neo4j.version>2.0.1</neo4j.version>
         <jersey.version>1.9</jersey.version>
         <license-text.header>GPL-3-header.txt</license-text.header>
     </properties>
@@ -124,10 +124,6 @@ the relevant Commercial Agreement.
                   <groupId>com.sun.jersey</groupId>
                   <artifactId>jersey-server</artifactId>
               </exclusion>
-              <!--exclusion>
-                <artifactId>jackson-jaxrs</artifactId>
-                <groupId>org.codehaus.jackson</groupId>
-              </exclusion-->
               <exclusion>
                   <groupId>de.huxhorn.lilith</groupId>
                   <artifactId>de.huxhorn.lilith.3rdparty.rrd4j</artifactId>
@@ -150,52 +146,6 @@ the relevant Commercial Agreement.
               </exclusion>
           </exclusions>
         </dependency>
-        <!--dependency>
-            <groupId>org.neo4j.server.plugin</groupId>
-            <artifactId>neo4j-gremlin-plugin</artifactId>
-            <version>${neo4j.version}</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>com.tinkerpop.blueprints</groupId>
-            <artifactId>blueprints-core</artifactId>
-            <version>${blueprints.version}</version>
-            <optional>true</optional>
-            <scope>test</scope>
-            <exclusions>
-              <exclusion>
-                <artifactId>jackson-jaxrs</artifactId>
-                <groupId>org.codehaus.jackson</groupId>
-              </exclusion>
-            </exclusions>
-        </dependency>
-        <dependency>
-            <groupId>com.tinkerpop.blueprints</groupId>
-            <artifactId>blueprints-neo4j-graph</artifactId>
-            <version>${blueprints.version}</version>
-            <optional>true</optional>
-            <scope>test</scope>
-            <exclusions>
-              <exclusion>
-                <artifactId>neo4j</artifactId>
-                <groupId>org.neo4j</groupId>
-              </exclusion>
-              <exclusion>
-                <artifactId>neo4j-ha</artifactId>
-                <groupId>org.neo4j</groupId>
-              </exclusion>
-              <exclusion>
-                <artifactId>neo4j-management</artifactId>
-                <groupId>org.neo4j</groupId>
-              </exclusion>
-            </exclusions>
-        </dependency>
-        <dependency>
-            <groupId>com.tinkerpop.gremlin</groupId>
-            <artifactId>gremlin-groovy</artifactId>
-            <version>${gremlin.version}</version>
-            <optional>true</optional>
-        </dependency-->
         <dependency>
             <groupId>org.neo4j</groupId>
             <artifactId>neo4j-lucene-index</artifactId>

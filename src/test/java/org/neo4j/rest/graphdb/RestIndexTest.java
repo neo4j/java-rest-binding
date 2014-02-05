@@ -27,7 +27,6 @@ import java.util.Map;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.search.TermQuery;
 import org.junit.Assert;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.neo4j.graphdb.Node;
 import org.neo4j.graphdb.Relationship;
@@ -36,7 +35,6 @@ import org.neo4j.graphdb.index.IndexHits;
 import org.neo4j.graphdb.index.IndexManager;
 import org.neo4j.graphdb.index.RelationshipIndex;
 import org.neo4j.index.lucene.QueryContext;
-import org.neo4j.rest.graphdb.index.RestNodeIndex;
 
 import static org.junit.Assert.assertEquals;
 
@@ -62,7 +60,6 @@ public class RestIndexTest extends RestTestBase {
     }
 
     @Test
-    @Ignore("Broken in Neo4j 2.0, Re-Enable in 2.0.1")
     public void testPutNodeIfAbsentIndex() {
         final Node node = nodeIndex().putIfAbsent(node(), "name", "test");
         Assert.assertEquals(node(), node);

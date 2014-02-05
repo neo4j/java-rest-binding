@@ -27,7 +27,6 @@ import java.util.Collection;
 import java.util.Map;
 
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.neo4j.graphdb.Node;
 import org.neo4j.graphdb.Transaction;
@@ -86,7 +85,6 @@ public class RestCypherQueryEngineTest extends RestTestBase {
         assertNeoNodeEquals(result);
     }
 
-    @Ignore
     @Test
     public void testGetNeoNodeByIndexQuery(){        
         final String queryString = "start neo=node:heroes({neoquery}) return neo";
@@ -116,7 +114,16 @@ public class RestCypherQueryEngineTest extends RestTestBase {
         final Node result = (Node) queryEngine.query(queryString, MapUtil.map("morpheusname","Morpheus")).to(Node.class).single();
         assertNeoNodeEquals(result);
     }
-    
+
+    @Test
+    public void testCollectConverter(){
+        final String queryString = "start neo=node:heroes(name={neoname}) match (neo) -- (other) return neo, collect(other) as o";
+        final Map result = (Map) queryEngine.query(queryString, MapUtil.map("neoname","Neo")).to(Map.class).single();
+        assertNeoNodeEquals((Node) result.get("neo"));
+        Collection<Node> others = (Collection<Node>) result.get("o");
+        assertEquals(5,others.size());
+    }
+
     @Test
     public void testGetCypherNodeViaMorpheusAndFilter(){
         final String queryString = "start morpheus=node:heroes(name={morpheusname}) match (morpheus) -[:KNOWS]-> (person) where person.type = \"villain\" return person";
