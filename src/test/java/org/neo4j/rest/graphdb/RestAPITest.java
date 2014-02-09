@@ -393,6 +393,7 @@ public class RestAPITest extends RestTestBase {
     public void testGetAllLabelNames() throws Exception {
         RestNode node = restAPI.createNode(map("name","foo bar"));
         node.addLabel(LABEL_FOO);
-        assertEquals(asList(LABEL_FOO.name(),LABEL_BAR.name()),restAPI.getAllLabelNames());
+        node.addLabel(LABEL_BAR);
+        assertThat(restAPI.getAllLabelNames(), hasItems(LABEL_FOO.name(),LABEL_BAR.name()));
     }
 }
