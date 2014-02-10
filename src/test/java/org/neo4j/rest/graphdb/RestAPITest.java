@@ -20,6 +20,7 @@
 package org.neo4j.rest.graphdb;
 
 import static java.util.Arrays.asList;
+import static org.hamcrest.CoreMatchers.hasItem;
 import static org.hamcrest.CoreMatchers.hasItems;
 import static org.junit.Assert.*;
 import static org.neo4j.graphdb.DynamicLabel.label;

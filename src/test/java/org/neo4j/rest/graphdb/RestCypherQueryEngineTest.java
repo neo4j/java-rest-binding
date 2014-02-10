@@ -122,6 +122,9 @@ public class RestCypherQueryEngineTest extends RestTestBase {
         assertNeoNodeEquals((Node) result.get("neo"));
         Collection<Node> others = (Collection<Node>) result.get("o");
         assertEquals(5,others.size());
+        for (Node other : others) {
+            assertTrue(other.getId() >= 0);
+        }
     }
 
     @Test

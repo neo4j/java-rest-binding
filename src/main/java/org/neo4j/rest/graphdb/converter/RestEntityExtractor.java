@@ -19,8 +19,9 @@
  */
 package org.neo4j.rest.graphdb.converter;
 
-import java.util.Map;
+import java.util.*;
 
+import org.neo4j.helpers.collection.IterableWrapper;
 import org.neo4j.rest.graphdb.RequestResult;
 import org.neo4j.rest.graphdb.RestAPI;
 import org.neo4j.rest.graphdb.entity.RestEntity;
@@ -39,11 +40,35 @@ public class RestEntityExtractor implements RestResultConverter {
         return convertFromRepresentation(requestResult.toMap());
     }
 
+    @SuppressWarnings("unchecked")
     public Object convertFromRepresentation(Object value) {
+        if (value instanceof Map) {
+            if (canHandle(value)) {
+                value = convertToEntityIfPossible(value);
+            } else {
+                final Map<String,Object> source = (Map<String,Object>) value;
+                Map<String,Object> result=new HashMap<>(source.size());
+                for (Map.Entry<String,Object> entry : source.entrySet()) {
+                    result.put(entry.getKey(),convertFromRepresentation(entry.getValue()));
+                }
+                return result;
+            }
+        }
+        if (value instanceof Iterable) {
+            Collection<Object> result = value instanceof Set ? new HashSet<>() : new ArrayList<>();
+            for (Object o : (Iterable) value) {
+                result.add(convertFromRepresentation(o));
+            }
+            return result;
+        }
+        return value;
+    }
+
+    private Object convertToEntityIfPossible(Object value) {
         if (value instanceof Map) {
             RestEntity restEntity = createRestEntity((Map) value);
             if (restEntity != null) return restEntity;
-        }       
+        }
         return value;
     }
 
