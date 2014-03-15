@@ -20,6 +20,7 @@
 package org.neo4j.rest.graphdb.entity;
 
 import static java.util.Arrays.asList;
+import static org.neo4j.rest.graphdb.ExecutingRestRequest.encode;
 
 import java.net.URI;
 import java.util.*;
@@ -67,7 +68,7 @@ public class RestNode extends RestEntity implements Node {
             if ( counter++ > 0 ) {
                 path += "&";
             }
-            path += type.name();
+            path += encode(type.name());
         }
         return restApi.getRelationships(this, path);
     }
@@ -81,7 +82,7 @@ public class RestNode extends RestEntity implements Node {
                                                     Direction direction ) {
         String relationshipsKey = RestDirection.from( direction ).longName + "_relationships";
         Object relationship = getStructuralData().get( relationshipsKey );
-        return restApi.getRelationships(this, relationship + "/" + type.name());
+        return restApi.getRelationships(this, relationship + "/" + encode(type.name()));
     }
 
     public Relationship getSingleRelationship( RelationshipType type,

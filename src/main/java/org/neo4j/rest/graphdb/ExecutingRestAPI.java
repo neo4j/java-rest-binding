@@ -56,6 +56,8 @@ import javax.ws.rs.core.Response.Status;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
+import java.net.URI;
+import java.net.URLEncoder;
 import java.util.*;
 
 import static java.util.Arrays.asList;
@@ -238,7 +240,7 @@ public class ExecutingRestAPI implements RestAPI {
 
     @Override
     public void removeLabel(RestNode node, String label) {
-        RequestResult response = getRestRequest().with(node.getUri()).delete("labels/" + label);
+        RequestResult response = getRestRequest().with(node.getUri()).delete("labels/" + encode(label));
         if (response.statusOtherThan(Status.NO_CONTENT)) {
             throw new IllegalStateException("received " + response);
         }
@@ -404,13 +406,13 @@ public class ExecutingRestAPI implements RestAPI {
     }
     @Override
     public IndexInfo indexInfo(final String indexType) {
-        RequestResult response = restRequest.get("index/" + indexType);
+        RequestResult response = restRequest.get("index/" + encode(indexType));
         return new RetrievedIndexInfo(response);
     }
     
     @Override
     public void setPropertyOnEntity(RestEntity entity, String key, Object value) {
-        getRestRequest().with(entity.getUri()).put( "properties/" + key, value);
+        getRestRequest().with(entity.getUri()).put( "properties/" + encode(key), value);
         entity.invalidatePropertyData();
     }
     
@@ -502,7 +504,7 @@ public class ExecutingRestAPI implements RestAPI {
 
     @Override
     public void removeProperty(RestEntity entity, String key) {
-        restRequest.with(entity.getUri()).delete("properties/" + key);
+        restRequest.with(entity.getUri()).delete("properties/" + encode(key));
         entity.invalidatePropertyData();
     }
 
