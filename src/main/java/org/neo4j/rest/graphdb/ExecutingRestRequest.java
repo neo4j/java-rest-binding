@@ -19,41 +19,27 @@
  */
 package org.neo4j.rest.graphdb;
 
-import java.io.*;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.net.URLEncoder;
-import java.util.Map;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ThreadFactory;
-
-import javax.ws.rs.core.MediaType;
-
-import com.sun.jersey.api.client.filter.LoggingFilter;
-import org.neo4j.helpers.collection.MapUtil;
-import org.neo4j.rest.graphdb.util.Config;
-import org.neo4j.rest.graphdb.util.JsonHelper;
-
 import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.api.client.WebResource;
 import com.sun.jersey.api.client.WebResource.Builder;
 import com.sun.jersey.api.client.filter.HTTPBasicAuthFilter;
-import org.neo4j.rest.graphdb.util.StreamJsonHelper;
+import com.sun.jersey.api.client.filter.LoggingFilter;
+import org.neo4j.helpers.collection.MapUtil;
+import org.neo4j.rest.graphdb.util.Config;
+import org.neo4j.rest.graphdb.util.JsonHelper;
+
+import javax.ws.rs.core.MediaType;
+import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URLEncoder;
+import java.util.Map;
 
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON_TYPE;
 
 public class ExecutingRestRequest implements RestRequest {
-
-    final static ExecutorService pool= Executors.newFixedThreadPool(Config.getWriterThreads(), new ThreadFactory() {
-        @Override
-        public Thread newThread(Runnable r) {
-            Thread thread = new Thread(r);
-            thread.setDaemon(true);
-            return thread;
-        }
-    });
 
     public static final MediaType STREAMING_JSON_TYPE = new MediaType(APPLICATION_JSON_TYPE.getType(),APPLICATION_JSON_TYPE.getSubtype(), MapUtil.stringMap("stream","true"));
     private final String baseUri;
@@ -151,34 +137,6 @@ public class ExecutingRestRequest implements RestRequest {
         return RequestResult.extractFrom(builder.post(ClientResponse.class));
     }
 
-    private InputStream toInputStream(final Object data) {
-        try {
-            if (data instanceof InputStream) return (InputStream) data;
-            final PipedInputStream inputStream = new PipedInputStream(8 * 1024);
-            final PipedOutputStream outputStream = new PipedOutputStream(inputStream);
-            pool.submit(new Runnable() {
-                public void run() {                     
-                    StreamJsonHelper.writeJsonTo(data, outputStream);
-                    try {
-                        outputStream.close();
-                    } catch (IOException e) {
-                        System.err.println("Error closing output stream for sent data "+e.getMessage());
-                        // ignore
-                    }
-                    try {
-                        inputStream.close();
-                    } catch (IOException e) {
-                        System.err.println("Error closing input stream for sent data "+e.getMessage());
-                        // ignore
-                    }
-                }
-            });
-            return inputStream;
-        } catch (IOException e) {
-            throw new RuntimeException("Error writing "+data+" to stream",e);
-        }
-    }
-
     @Override
     public RequestResult put( String path, Object data ) {
         Builder builder = builder( path );
@@ -213,6 +171,5 @@ public class ExecutingRestRequest implements RestRequest {
 	}
 
     public static void shutdown() {
-        pool.shutdown();
     }
 }
