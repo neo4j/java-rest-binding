@@ -1,3 +1,11 @@
+Note
+----
+*This library is no longer maintained.*
+
+Wrapping an over-the-wire connection behind a `GraphDatabaseService` API was never a good idea as operations that are in-process calls in the embedded case are network requests here with all the latency and behavior implications.
+
+
+
 The Java binding for the Neo4j Server REST API wraps the REST calls behind the well known
 [GraphDatabaseService](http://api.neo4j.org/1.8.M07/org/neo4j/graphdb/GraphDatabaseService.html) API.
 
@@ -7,8 +15,6 @@ your data and on batching and cypher to update the graph.
 
 You can also use the `RestAPIFacade` directly to interact with your Neo4j-Server, without the GraphDatabaseService Wrapper.
 
-Note
-----
 The behavior of "transactions" changed in 1.8, in 1.7 they were no-op, i.e. just ignored. So you could just leave them off to not confuse people.
 
 In 1.8 it tries to collect all operations within a tx as a batch-operation which will then be executed on the server.
