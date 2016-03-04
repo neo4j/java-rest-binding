@@ -51,18 +51,22 @@ public class RestGraphDatabase extends AbstractRemoteDatabase {
     	return this.restAPI;
     }
 
+    @Override
     public RestIndexManager index() {
        return this.restAPI.index();
     }
 
+    @Override
     public Node createNode() {
     	return this.restAPI.createNode(null);
     }
   
+    @Override
     public Node getNodeById( long id ) {
     	return this.restAPI.getNodeById(id);
     }
 
+    @Override
     public Node getReferenceNode() {
         return this.restAPI.getReferenceNode();
     }
@@ -82,6 +86,7 @@ public class RestGraphDatabase extends AbstractRemoteDatabase {
         });
     }
 
+    @Override
     public Relationship getRelationshipById( long id ) {
     	return this.restAPI.getRelationshipById(id);
     }    
@@ -103,6 +108,12 @@ public class RestGraphDatabase extends AbstractRemoteDatabase {
     @Override
     public void shutdown() {
         restAPI.close();
+    }
+
+    @Override
+    public boolean isAvailable(long l) {
+        // not really sure what to use here
+        return restAPI != null && cypherQueryEngine != null;
     }
 }
 
